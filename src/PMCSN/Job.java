@@ -1,11 +1,11 @@
+package PMCSN;
 /*** La classe Patient rappresenta il singolo job 
  * */
 
-public class Patient {
+public class Job {
 	
 	private int interarrival;
-	private boolean illness;
-	private boolean prescription;
+	private int priority; // 1=high, 2=medium, 3=low
 	private int sqn; //sequence number
 	private double wait; //tempo di attesa
 	private double service; //tempo di servizio
@@ -13,11 +13,10 @@ public class Patient {
 	
 	
 	
-	public Patient(int interarrival, boolean illness, boolean prescription) {
+	public Job(int interarrival, int priority) {
 		super();
 		this.interarrival = interarrival;
-		this.illness = illness;
-		this.prescription = prescription;
+		this.priority = priority;
 	}
 	
 	public int getInterarrival() {
@@ -26,17 +25,11 @@ public class Patient {
 	public void setInterarrival(int interarrival) {
 		this.interarrival = interarrival;
 	}
-	public boolean isIllness() {
-		return illness;
+	public int getPriority() {
+		return priority;
 	}
-	public void setIllness(boolean illness) {
-		this.illness = illness;
-	}
-	public boolean isPrescription() {
-		return prescription;
-	}
-	public void setPrescription(boolean prescription) {
-		this.prescription = prescription;
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 	public int getSqn() {
 		return sqn;
