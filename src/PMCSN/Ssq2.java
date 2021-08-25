@@ -19,7 +19,7 @@ import java.lang.*;
 import java.text.*;
 import java.util.ArrayList;
 
-class Ssq2 {
+class Ssq2 implements Runnable{
 
   static long LAST = 10000;                    /* number of jobs processed */
   static double START = 0.0;                   /* initial time             */
@@ -36,6 +36,15 @@ class Ssq2 {
   static char backend = 'B';
   static char wordpress = 'W';
   static char blog = 'R';
+
+    //All'interno di questo metodo dobbiamo mettere quello che va fatto eseguire dall'altro thread
+    //ovviamente le variabili vanno rese public e globali per la classe altrimenti i due thread non le vedono
+    //Secondo me dovremmo mettere quella porzione di codice proprio all'interno della classe server
+    public void run() {
+        while(true){
+            System.out.println("ciao");
+        }
+    }
 	
   public static void main(String[] args) {
     
@@ -69,7 +78,7 @@ class Ssq2 {
 	  job.setArrival(arrival);
 	  job.setPriority(priority);
 	  job.setTopic(topic);
-	  
+
 	  if (job.getPriority() == hPrio) {
 			hQueue.add(job); //queue.get(hPrio).add(job);
 	  } else if (job.getPriority() == mPrio) {
@@ -77,10 +86,12 @@ class Ssq2 {
 	  } else {
 			lQueue.add(job); //queue.get(lPrio).add(job);
 	  }
-	  
-	  
+
+	  Server s = new Server();
+	  Thread t = new Thread(s);
+	  t.start();
 	  /* Quello che segue dovrebbe essere eseguito da un altro thread */
-	  
+
 	  if (hQueue.isEmpty() && mQueue.isEmpty() && lQueue.isEmpty()) {
 		  continue;
 	  } else if (hQueue.isEmpty() && mQueue.isEmpty() && !lQueue.isEmpty()) {
@@ -90,7 +101,7 @@ class Ssq2 {
 	  } else if (!hQueue.isEmpty()) {
 		  // prendi il primo elemento di hQueue, mandalo al server e rimuovilo
 	  }
-	  
+
 	  if (arrival < departure)
 	    delay = departure - arrival;         /* delay in queue    */
 	  else
@@ -102,7 +113,7 @@ class Ssq2 {
 	  job.setWait(job.getWait() + wait);
 	  job.setService(job.getService() + service);
 	  job.setPriority(priority);
-	  
+
 	  index++;
     }
     job.setInterarrival(arrival - START);
