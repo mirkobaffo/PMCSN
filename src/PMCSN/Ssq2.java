@@ -19,7 +19,7 @@ import java.lang.*;
 import java.text.*;
 import java.util.ArrayList;
 
-class Ssq2 implements Runnable{
+class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
 
   static long LAST = 10000;                    /* number of jobs processed */
   static double START = 0.0;                   /* initial time             */
@@ -30,25 +30,28 @@ class Ssq2 implements Runnable{
   static int mPrio = 2;
   static int lPrio = 3;
   
+  static int minPrioValue = 1;
+  static int maxPrioValue = 4;
+  
   static int minTopic = 1;
   static int maxTopic = 2;
   static char frontend = 'F';
   static char backend = 'B';
   static char wordpress = 'W';
   static char blog = 'R';
+  
+  public static ArrayList<ArrayList<Job>> queue = new ArrayList<>();
+  public static ArrayList<Job> hQueue = new ArrayList<>();
+  public static ArrayList<Job> mQueue = new ArrayList<>();
+  public static ArrayList<Job> lQueue = new ArrayList<>();
 
     //All'interno di questo metodo dobbiamo mettere quello che va fatto eseguire dall'altro thread
     //ovviamente le variabili vanno rese public e globali per la classe altrimenti i due thread non le vedono
-    //Secondo me dovremmo mettere quella porzione di codice proprio all'interno della classe server
-    public void run() {
-        while(true){
-            System.out.println("ciao");
-        }
-    }
+    //Secondo me dovremmo mettere quella porzione di codice proprio all'interno della classe server -->> quoto
 	
   public static void main(String[] args) {
     
-    long   index     = 0;                         /* job index            */
+    int   index     = 0;                         /* job index            */
     double arrival   = START;                     /* time of arrival      */
     double delay;                                 /* delay in queue       */
     double service;                               /* service time         */
@@ -63,21 +66,21 @@ class Ssq2 implements Runnable{
     Rng r = new Rng();
     r.putSeed(123456789);
     
-    ArrayList<ArrayList<Job>> queue = new ArrayList<>();
-	ArrayList<Job> hQueue = new ArrayList<>();
-	ArrayList<Job> mQueue = new ArrayList<>();
-	ArrayList<Job> lQueue = new ArrayList<>();
 	queue.add(hQueue);
 	queue.add(mQueue);
 	queue.add(lQueue);
 
+	Thread master = new Thread(new ServerMaster());
+    master.start();
+    
     while (index < LAST) {
-      priority = Generator.getRandomInRange(hPrio, lPrio);
+      priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
       topic = Generator.getRandomTopic(minTopic, maxTopic);
-	  arrival = Arrival.getArrival(sarrival, r);
+	  arrival = Arrival.getArrival(sarrival, r); // l'istante di arrivo del job 
 	  job.setArrival(arrival);
 	  job.setPriority(priority);
 	  job.setTopic(topic);
+	  job.setSqn(index);
 
 	  if (job.getPriority() == hPrio) {
 			hQueue.add(job); //queue.get(hPrio).add(job);
@@ -86,13 +89,17 @@ class Ssq2 implements Runnable{
 	  } else {
 			lQueue.add(job); //queue.get(lPrio).add(job);
 	  }
+	  index++;
+    }
+    
+  }
 
-	  Server s = new Server();
+	  /*ServerMaster s = new ServerMaster();
 	  Thread t = new Thread(s);
-	  t.start();
+	  t.start();*/
 	  /* Quello che segue dovrebbe essere eseguito da un altro thread */
 
-	  if (hQueue.isEmpty() && mQueue.isEmpty() && lQueue.isEmpty()) {
+	  /*if (hQueue.isEmpty() && mQueue.isEmpty() && lQueue.isEmpty()) {
 		  continue;
 	  } else if (hQueue.isEmpty() && mQueue.isEmpty() && !lQueue.isEmpty()) {
 		  // prendi il primo elemento di lQueue, mandalo al server e rimuovilo
@@ -103,12 +110,12 @@ class Ssq2 implements Runnable{
 	  }
 
 	  if (arrival < departure)
-	    delay = departure - arrival;         /* delay in queue    */
+	    delay = departure - arrival;         // delay in queue    
 	  else
-	    delay = 0.0;                         /* no delay          */
+	    delay = 0.0;                         // no delay          
 	  service = Arrival.getService(r);
 	  wait = delay + service;
-	  departure = arrival + wait;              /* time of departure */
+	  departure = arrival + wait;              // time of departure 
 	  job.setDelay(job.getDelay() + delay);
 	  job.setWait(job.getWait() + wait);
 	  job.setService(job.getService() + service);
@@ -128,8 +135,8 @@ class Ssq2 implements Runnable{
     System.out.println("   average # in the node ... =   " + f.format(job.getWait() / departure));
     System.out.println("   average # in the queue .. =   " + f.format(job.getDelay() / departure));
     System.out.println("   utilization ............. =   " + f.format(job.getService() / departure));
-  }
-
+  }*/
+ 
 
    static double exponential(double m, Rng r) {
 /* ---------------------------------------------------
