@@ -48,17 +48,17 @@ public class ServerMaster implements Runnable {
             	
             	continue;
             	
-	      	} else if (Ssq2.lQueue.get(0).getArrival() >=totalService && Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && !Ssq2.lQueue.isEmpty()) {
+	      	} else if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && !Ssq2.lQueue.isEmpty() && Ssq2.lQueue.get(0).getArrival() <= totalService) {
 	      		  // prendi il primo elemento di lQueue, mandalo al server e rimuovilo
 	      		myWriter.write("Job a bassa priorità" + "\n");
 	      		job = Ssq2.lQueue.get(0);
 	      		Ssq2.lQueue.remove(0);
-	      	} else if (Ssq2.mQueue.get(0).getArrival() >=totalService && Ssq2.hQueue.isEmpty() && !Ssq2.mQueue.isEmpty()) {
+	      	} else if (Ssq2.hQueue.isEmpty() && !Ssq2.mQueue.isEmpty() && Ssq2.mQueue.get(0).getArrival() <= totalService ) {
 	      		  // prendi il primo elemento di mQueue, mandalo al server e rimuovilo
 	      		myWriter.write("Job a media priorità" + "\n");
         		job = Ssq2.mQueue.get(0);
 	      		Ssq2.mQueue.remove(0);
-	      	} else if (Ssq2.hQueue.get(0).getArrival() >=totalService  && !Ssq2.hQueue.isEmpty()) {
+	      	} else if (!Ssq2.hQueue.isEmpty() && Ssq2.hQueue.get(0).getArrival() <= totalService) {
 	      		  // prendi il primo elemento di hQueue, mandalo al server e rimuovilo
 	      		myWriter.write("Job ad alta priorità" + "\n");
         		job = Ssq2.hQueue.get(0);
