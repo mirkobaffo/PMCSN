@@ -7,6 +7,7 @@ public class Job {
 	private double interarrival;
 	private double arrival;
 	private double delay;      /*   delay times  */
+	private double departure;
 	private int priority; // 1=high, 2=medium, 3=low
 	private char topic; // 1:'F'=frontend, 2:'B'=backend, 3:'W'=wordpress, 4:'R'=blog
 	private int sqn; //sequence number
@@ -83,6 +84,12 @@ public class Job {
 	}
 	public void setTopic(char topic) {
 		this.topic = topic;
+	}
+	public double getDeparture() {
+		return departure;
+	}
+	public void setDeparture(double departure) {
+		this.departure = departure;
 	}
 
 	

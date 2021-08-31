@@ -24,7 +24,7 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
   static long LAST = 10000;                    /* number of jobs processed */
   static double START = 0.0;                   /* initial time             */
   
-  static double sarrival = START;              /* Why did I do this?       */
+  static double sarrival = START;  			   /* Why did I do this?       */
 
   static int hPrio = 1;
   static int mPrio = 2;
@@ -44,18 +44,13 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
   public static ArrayList<Job> hQueue = new ArrayList<>();
   public static ArrayList<Job> mQueue = new ArrayList<>();
   public static ArrayList<Job> lQueue = new ArrayList<>();
+  
+  public static Rng r = new Rng();
 
-    //All'interno di questo metodo dobbiamo mettere quello che va fatto eseguire dall'altro thread
-    //ovviamente le variabili vanno rese public e globali per la classe altrimenti i due thread non le vedono
-    //Secondo me dovremmo mettere quella porzione di codice proprio all'interno della classe server -->> quoto
-	
   public static void main(String[] args) {
     
-    int   index     = 0;                         /* job index            */
-    double arrival   = START;                     /* time of arrival      */
-    double delay;                                 /* delay in queue       */
-    double service;                               /* service time         */
-    double wait;                                  /* delay + service      */
+    int   index     = 0;   							/* job index            */
+    double arrival   = START;             /* time of arrival      */
     double departure = START;  					/* time of departure    */
     int priority;
     char topic;
@@ -63,7 +58,6 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
     Job job = new Job();
     job.initParams();
       
-    Rng r = new Rng();
     r.putSeed(123456789);
     
 	queue.add(hQueue);
@@ -76,19 +70,21 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
     while (index < LAST) {
       priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
       topic = Generator.getRandomTopic(minTopic, maxTopic);
-	  arrival = Arrival.getArrival(sarrival, r); // l'istante di arrivo del job 
+	  arrival = Arrival.getArrival(sarrival, r);   // l'istante di arrivo del job 
 	  job.setArrival(arrival);
 	  job.setPriority(priority);
 	  job.setTopic(topic);
 	  job.setSqn(index);
+	  job.setDeparture(departure);
 
 	  if (job.getPriority() == hPrio) {
-			hQueue.add(job); //queue.get(hPrio).add(job);
+			hQueue.add(job); 
 	  } else if (job.getPriority() == mPrio) {
-			mQueue.add(job); //queue.get(mPrio).add(job);
+			mQueue.add(job); 
 	  } else {
-			lQueue.add(job); //queue.get(lPrio).add(job);
+			lQueue.add(job); 
 	  }
+	  sarrival = arrival;
 	  index++;
     }
     
