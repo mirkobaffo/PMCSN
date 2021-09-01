@@ -15,6 +15,14 @@ public class Generator {
 		    return (-m * Math.log(1.0 - r.random()));
 	}
 	
+	public static boolean getWeighBoolean(int percentage) { 
+		double num = Math.random();
+		if (num > percentage) {
+			return false;
+		}
+		return true;
+	}
+	
 	public static char getRandomTopic(int min, int max) {
 		char ret = ' ';
 		int topicValue = Generator.getRandomInRange(min, max);

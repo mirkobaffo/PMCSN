@@ -14,6 +14,10 @@ public class Job {
 	private double wait; //tempo di attesa
 	private double service; //tempo di servizio
 	private double response; //tempo di risposta
+	private boolean state; /* lo stato del job può essere: 
+							true = servito (da revisionare), false = non servito  */
+	
+	
 	
 	public void initParams() {
 	    delay = 0.0;
@@ -22,6 +26,7 @@ public class Job {
 	    interarrival = 0.0;
 	}
 	
+
 	public Job() { }
 	
 	public Job(double arrival, int priority, char topic) {
@@ -91,6 +96,11 @@ public class Job {
 	public void setDeparture(double departure) {
 		this.departure = departure;
 	}
-
+	public boolean getState() {
+		return state;
+	}
+	public void setState(boolean state) {
+		this.state = state;
+	}
 	
 }

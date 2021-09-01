@@ -16,10 +16,12 @@ package PMCSN;
 
 import java.io.*;
 import java.lang.*;
+import java.rmi.UnexpectedException;
 import java.text.*;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
+class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il thread degli arrivi
 
   static long LAST = 10000;                    /* number of jobs processed */
   static double START = 0.0;                   /* initial time             */
@@ -47,7 +49,9 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
   
   public static Rng r = new Rng();
 
-  public static void main(String[] args) {
+  public static long start = System.currentTimeMillis();
+
+  public void run() {
     
     int   index     = 0;   							/* job index            */
     double arrival   = START;             /* time of arrival      */
@@ -63,11 +67,14 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
 	queue.add(hQueue);
 	queue.add(mQueue);
 	queue.add(lQueue);
-
-	Thread master = new Thread(new ServerMaster());
-    master.start();
     
     while (index < LAST) {
+    	try {
+	  	    TimeUnit.MICROSECONDS.sleep(1000);
+    	} catch (InterruptedException e) {
+    		e.printStackTrace();
+    	}
+      
       priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
       topic = Generator.getRandomTopic(minTopic, maxTopic);
 	  arrival = Arrival.getArrival(sarrival, r);   // l'istante di arrivo del job 
@@ -77,13 +84,7 @@ class Ssq2 { //dovremo cambiargli nome perché questo è il thread degli arrivi
 	  job.setSqn(index);
 	  job.setDeparture(departure);
 
-	  if (job.getPriority() == hPrio) {
-			hQueue.add(job); 
-	  } else if (job.getPriority() == mPrio) {
-			mQueue.add(job); 
-	  } else {
-			lQueue.add(job); 
-	  }
+	  Utils.prioSplitter(job);
 	  sarrival = arrival;
 	  index++;
     }

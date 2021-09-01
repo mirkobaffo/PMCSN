@@ -3,10 +3,12 @@ package PMCSN;
 public class Main {
 	
 	public static void main(String[] args) {
-		
+			
+		Thread ssq2 = new Thread(new Ssq2());
+		ssq2.start();
         Thread master = new Thread(new ServerMaster());
         master.start();
-		for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
 	        Thread backend = new Thread(new ServerBackend());
 	        backend.start();
 		}
