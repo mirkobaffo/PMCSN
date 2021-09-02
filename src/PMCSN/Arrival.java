@@ -3,23 +3,23 @@ import java.util.ArrayList;
 
 public class Arrival {
 	
-	public static double getArrival(double sarrival, Rng r) {
+	public static double getArrival(double sarrival, Rng r, double m) {
 		/* ------------------------------
 		 * generate the next arrival time
 		 * ------------------------------
 		 */
 //		    static double sarrival = START;
 
-		    sarrival += Generator.exponentialGenerator(2.0, r);
+		    sarrival += Generator.exponentialGenerator(m, r);
 		    return (sarrival);
 		  }
 	
-	public static double getService(Rng r) {
+	public static double getService(Rng r, double u) {
 		/* ------------------------------
 		 * generate the next service time
 		 * ------------------------------
 		 */
-		    return (Generator.exponentialGenerator(2.0, r));
+		    return (Generator.exponentialGenerator(u, r));
 		  }
 
 

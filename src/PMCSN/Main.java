@@ -3,7 +3,6 @@ package PMCSN;
 public class Main {
 	
 	public static void main(String[] args) {
-			
 		Thread ssq2 = new Thread(new Ssq2());
 		ssq2.start();
         Thread master = new Thread(new ServerMaster());

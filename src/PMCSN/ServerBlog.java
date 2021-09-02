@@ -1,5 +1,6 @@
 package PMCSN;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +17,8 @@ public class ServerBlog implements Runnable {
         double wait;                                  /* delay + service      */
         double departure = Ssq2.START;
         double totalService = 0;
+		//service time
+		double u = 0.4;
 
         try {
         	
@@ -33,7 +36,7 @@ public class ServerBlog implements Runnable {
                 } else {
               	  delay = 0.0;      								 // no delay   
                 }
-    			service = Arrival.getService(Ssq2.r);
+    			service = Arrival.getService(Ssq2.r, u);
     			wait = delay + service;
     			departure = job.getArrival() + wait;            	  // time of departure 
     			job.setDelay(job.getDelay() + delay);
@@ -42,10 +45,17 @@ public class ServerBlog implements Runnable {
     			totalService = totalService + service;
 
     			/* questo server non fa feedback */
-    			
+
+
     			//job.setState(true); // setto lo stato del job a true, cioè servito e da revisionare
     			//Utils.prioSplitter(job);
-    			
+				DecimalFormat f = new DecimalFormat("###0.00");
+
+				//System.out.println("   type of the job .. =   " + (job.getTopic()));
+				//System.out.println("   interarrival time =   " + f.format(job.getInterarrival()));
+				//System.out.println("   wait ............ =   " + f.format(job.getWait()));
+				//System.out.println("   delay ........... =   " + f.format(job.getDelay()));
+				//System.out.println("   service time .... =   " + f.format(job.getService()));
             }
         	
         } catch (InterruptedException e) {

@@ -27,7 +27,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
   static double START = 0.0;                   /* initial time             */
   
   static double sarrival = START;  			   /* Why did I do this?       */
-
+    static double lambda = 6.0;
   static int hPrio = 1;
   static int mPrio = 2;
   static int lPrio = 3;
@@ -36,7 +36,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
   static int maxPrioValue = 4;
   
   static int minTopic = 1;
-  static int maxTopic = 2;
+  static int maxTopic = 5;
   static char frontend = 'F';
   static char backend = 'B';
   static char wordpress = 'W';
@@ -58,6 +58,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     double departure = START;  					/* time of departure    */
     int priority;
     char topic;
+
     
     Job job = new Job();
     job.initParams();
@@ -77,7 +78,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
       
       priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
       topic = Generator.getRandomTopic(minTopic, maxTopic);
-	  arrival = Arrival.getArrival(sarrival, r);   // l'istante di arrivo del job 
+	  arrival = Arrival.getArrival(sarrival, r, lambda);   // l'istante di arrivo del job
 	  job.setArrival(arrival);
 	  job.setPriority(priority);
 	  job.setTopic(topic);

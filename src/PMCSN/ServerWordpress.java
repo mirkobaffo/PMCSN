@@ -15,6 +15,8 @@ public class ServerWordpress implements Runnable {
         double wait;                                  /* delay + service      */
         double departure = Ssq2.START;
         double totalService = 0;
+		//service time
+		double u = 1.0;
 
         try {
         	
@@ -32,7 +34,7 @@ public class ServerWordpress implements Runnable {
                 } else {
               	  delay = 0.0;      								 // no delay   
                 }
-    			service = Arrival.getService(Ssq2.r);
+    			service = Arrival.getService(Ssq2.r,u);
     			wait = delay + service;
     			departure = job.getArrival() + wait;            	  // time of departure 
     			job.setDelay(job.getDelay() + delay);
