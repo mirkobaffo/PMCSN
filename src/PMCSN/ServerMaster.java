@@ -1,8 +1,10 @@
 package PMCSN;
 
 import java.io.FileWriter;
+
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class ServerMaster implements Runnable {
@@ -14,11 +16,12 @@ public class ServerMaster implements Runnable {
     }*/
 
 	public static long end;
+    public static ArrayList<ArrayList<Job>> all = new ArrayList<>();
 
 
     public void run() {
     	
-    	Job job = new Job();
+    	Job job = new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
     	int index = 0;
     	int counter = 0;
     	double delay;                                 /* delay in queue       */
@@ -28,20 +31,31 @@ public class ServerMaster implements Runnable {
         double totalService = 0;
         double u = 5.45;
         
+		ArrayList<Job> fQueue = new ArrayList<>();
+		ArrayList<Job> bQueue = new ArrayList<>();
+		ArrayList<Job> rQueue = new ArrayList<>();
+		ArrayList<Job> wQueue = new ArrayList<>();
+		all.add(fQueue);
+		all.add(bQueue);
+		all.add(wQueue);
+		all.add(rQueue);
+		
         try {
 
-			FileWriter writer = new FileWriter("/Users/mirko/Desktop/output");
+			//FileWriter writer = new FileWriter("/Users/mirko/Desktop/output");
 			//FileWriter writer = new FileWriter("/home/crazile/Scrivania/output.txt");
         		
 	        while(index < Ssq2.LAST){
-	        	
+	        
 	        	TimeUnit.MICROSECONDS.sleep(1000);
 	        	
+	        	Job temp = null;
 	         	//myWriter.write("ciao Master" + Thread.currentThread().getId());
 	        	
-	        	if (job.getState() == true) { 	    /*  gestione dei job in arrivo dal feedback */
+	        	/*if (job.getState() == true) { 	    //  gestione dei job in arrivo dal feedback 
 	        		Utils.checkState(job);
-	        	} else {
+	        	} else {*/
+	        		
 	        		if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && Ssq2.lQueue.isEmpty()) {
 			      		  // continua
 			            	//myWriter.write("Tutte vuote" + "\n");
@@ -54,65 +68,85 @@ public class ServerMaster implements Runnable {
 			            	}
 			            	counter++;
 			            	/**/
-			            	
+			            	index++;
 			            	continue;
 			            	
 				      	} else if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && !Ssq2.lQueue.isEmpty() ) {
-				        	writer.write("Job totali: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size() + "\n");
+				        	//writer.write("Job totali: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size() + "\n");
 				      		  // prendi il primo elemento di lQueue, mandalo al server e rimuovilo
-				      		writer.write("Job a bassa priorità" + "\n");
-				      		job = Ssq2.lQueue.get(0);
+				      		//writer.write("Job a bassa priorità" + "\n");
+				      		temp = Ssq2.lQueue.get(0);
 				      		Ssq2.lQueue.remove(0);
 				      	} else if (Ssq2.hQueue.isEmpty() && !Ssq2.mQueue.isEmpty()) {
-				        	writer.write("Job totali: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size() + "\n");
+				        	//writer.write("Job totali: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size() + "\n");
 				      		  // prendi il primo elemento di mQueue, mandalo al server e rimuovilo
-				      		writer.write("Job a media priorità" + "\n");
-			        		job = Ssq2.mQueue.get(0);
+				      		//writer.write("Job a media priorità" + "\n");
+			        		temp = Ssq2.mQueue.get(0);
 				      		Ssq2.mQueue.remove(0);
 				      	} else if (!Ssq2.hQueue.isEmpty()) {
-				        	writer.write("Job totali: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size() + "\n");
+				        	//writer.write("Job totali: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size() + "\n");
 				      		  // prendi il primo elemento di hQueue, mandalo al server e rimuovilo
-				      		writer.write("Job ad alta priorità" + "\n");
-			        		job = Ssq2.hQueue.get(0);
+				      		//writer.write("Job ad alta priorità" + "\n");
+			        		temp = Ssq2.hQueue.get(0);
 			    			Ssq2.hQueue.remove(0);
 				      	}
-	        	}
+	        	//}
 	            
 	        
 	            
-	            if (job == null) {
-	            	writer.write("Questo job per qualche motivo è null" + "\n");
+	            if (temp == null) {
+	            	//writer.write("Questo job per qualche motivo è null" + "\n");
+	            	index++;
 	            	continue;
 	            }
-	            writer.write(Double.toString(job.getArrival()) + "\n");
-	            writer.write(Double.toString(job.getDeparture()) + "\n");
+	            //writer.write(Double.toString(job.getArrival()) + "\n");
+	            //writer.write(Double.toString(job.getDeparture()) + "\n");
 	            //System.exit(0);
 	            
-	            if (job.getArrival() < job.getDeparture()) {
-	            	  delay = job.getDeparture() - job.getArrival(); 	// delay in queue 
+	            if (temp.getArrival() < temp.getDeparture()) {
+	            	  delay = temp.getDeparture() - temp.getArrival(); 	// delay in queue 
 	            } else {
 	            	  delay = 0.0;      							 // no delay   
 	            }
 				service = Arrival.getService(Ssq2.r, u);
 				wait = delay + service;
-				departure = job.getArrival() + wait;            	  // time of departure 
-				job.setDelay(job.getDelay() + delay);
-				job.setWait(job.getWait() + wait);
-				job.setService(job.getService() + service);
+				departure = temp.getArrival() + wait;    // time of departure
+				job = new Job(temp.getArrival(), temp.getDelay() + delay, temp.getDeparture(), temp.getPriority(), temp.getTopic(), temp.getSqn(), temp.getWait() + wait, temp.getService() + service, temp.getService(), temp.getState());
+				/*temp.setDelay(temp.getDelay() + delay);
+				temp.setWait(temp.getWait() + wait);
+				temp.setService(temp.getService() + service);*/
 				totalService = totalService + service;
 				
-				Utils.topicSplitter(job);
+				/*if (!fQueue.isEmpty()) {
+					System.out.println("primo elemento di frontend all'iterazione " + index + ": " + fQueue.get(0).getTopic() + "\n");
+				}*/
+				Utils.topicSplitter(job, fQueue, bQueue, wQueue, rQueue);
 	            index++; 
 	        }
-	        writer.close();
+	        System.out.println("coda frontend: \n");
+			for (Job elem: fQueue) {
+				System.out.println(elem.getTopic() + "\n");
+			}
+			System.out.println("coda backend: \n");
+			for (Job elem: bQueue) {
+				System.out.println(elem.getTopic() + "\n");
+			}
+			System.out.println("coda wordpress: \n");
+			for (Job elem: wQueue) {
+				System.out.println(elem.getTopic() + "\n");
+			}
+			System.out.println("coda blog: \n");
+			for (Job elem: rQueue) {
+				System.out.println(elem.getTopic() + "\n");
+			}
+	        //writer.close();
         
-        }catch (IOException e) {
-        	e.printStackTrace();
+        /*} catch (IOException e) {
+        	e.printStackTrace();*/
         } catch (InterruptedException e) {
     		e.printStackTrace();
     	}
-        
-		job.setInterarrival(job.getArrival() - Ssq2.START);
+		//job.setInterarrival(job.getArrival() - Ssq2.START);
 		DecimalFormat f = new DecimalFormat("###0.00");
 		
 		System.out.println("\nfor " + index + " jobs");

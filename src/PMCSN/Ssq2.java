@@ -60,8 +60,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     char topic;
 
     
-    Job job = new Job();
-    job.initParams();
+    //Job job = new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
       
     r.putSeed(123456789);
     
@@ -79,12 +78,12 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
       priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
       topic = Generator.getRandomTopic(minTopic, maxTopic);
 	  arrival = Arrival.getArrival(sarrival, r, lambda);   // l'istante di arrivo del job
-	  job.setArrival(arrival);
+	 /* job.setArrival(arrival);
 	  job.setPriority(priority);
 	  job.setTopic(topic);
 	  job.setSqn(index);
-	  job.setDeparture(departure);
-
+	  job.setDeparture(departure);*/
+	  Job job = new Job(arrival, 0.0, departure, priority, topic, index, 0.0, 0.0, 0.0, false);
 	  Utils.prioSplitter(job);
 	  sarrival = arrival;
 	  index++;

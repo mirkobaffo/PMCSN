@@ -2,105 +2,109 @@ package PMCSN;
 /*** La classe Patient rappresenta il singolo job 
  * */
 
-public class Job {
+public final class Job {
 	
-	private double interarrival;
-	private double arrival;
-	private double delay;      /*   delay times  */
-	private double departure;
-	private int priority; // 1=high, 2=medium, 3=low
-	private char topic; // 1:'F'=frontend, 2:'B'=backend, 3:'W'=wordpress, 4:'R'=blog
-	private int sqn; //sequence number
-	private double wait; //tempo di attesa
-	private double service; //tempo di servizio
-	private double response; //tempo di risposta
-	private boolean state; /* lo stato del job può essere: 
+	private final double interarrival = 0.0;
+	private final double arrival;
+	private final double delay;      /*   delay times  */
+	private final double departure;
+	private final int priority; // 1=high, 2=medium, 3=low
+	private final char topic; // 1:'F'=frontend, 2:'B'=backend, 3:'W'=wordpress, 4:'R'=blog
+	private final int sqn; //sequence number
+	private final double wait; //tempo di attesa
+	private final double service; //tempo di servizio
+	private final double response; //tempo di risposta
+	private final boolean state; /* lo stato del job può essere: 
 							true = servito (da revisionare), false = non servito  */
 	
 	
 	
-	public void initParams() {
+	/*public void initParams() {
 	    delay = 0.0;
 	    wait = 0.0;
 	    service = 0.0;
 	    interarrival = 0.0;
-	}
+	}*/
 	
-
-	public Job() { }
 	
-	public Job(double arrival, int priority, char topic) {
-		super();
+	public Job(double arrival, double delay, double departure, int priority, char topic, int sqn, double wait, double service, double response, boolean state) {
+		
 		this.arrival = arrival;
+		this.delay = delay;
+		this.departure = departure;
 		this.priority = priority;
 		this.topic = topic;
+		this.sqn = sqn;
+		this.wait = wait;
+		this.service = service;
+		this.response = response;
+		this.state = state;
 	}
 	
 	public double getInterarrival() {
 		return interarrival;
 	}
-	public void setInterarrival(double interarrival) {
-		this.interarrival = interarrival;
-	}
+	/*public void setInterarrival(double interarrival) {
+		this.inter*/
 	public int getPriority() {
 		return priority;
 	}
-	public void setPriority(int priority) {
+	/*public void setPriority(int priority) {
 		this.priority = priority;
-	}
+	}*/
 	public int getSqn() {
 		return sqn;
 	}
-	public void setSqn(int sqn) {
+	/*public void setSqn(int sqn) {
 		this.sqn = sqn;
-	}
+	}*/
 	public double getWait() {
 		return wait;
 	}
-	public void setWait(double wait) {
+	/*public void setWait(double wait) {
 		this.wait = wait;
-	}
+	}*/
 	public double getService() {
 		return service;
 	}
-	public void setService(double service) {
+	/*public void setService(double service) {
 		this.service = service;
-	}
+	}*/
 	public double getResponse() {
 		return response;
 	}
-	public void setResponse(double response) {
+	/*public void setResponse(double response) {
 		this.response = response;
-	}
+	}*/
 	public double getDelay() {
 		return delay;
 	}
-	public void setDelay(double delay) {
+	/*public void setDelay(double delay) {
 		this.delay = delay;
-	}
+	}*/
 	public double getArrival() {
 		return arrival;
 	}
-	public void setArrival(double arrival) {
+	/*public void setArrival(double arrival) {
 		this.arrival = arrival;
-	}
+	}*/
 	public char getTopic() {
 		return topic;
 	}
-	public void setTopic(char topic) {
+	/*public void setTopic(char topic) {
 		this.topic = topic;
-	}
+	}*/
 	public double getDeparture() {
 		return departure;
 	}
-	public void setDeparture(double departure) {
+	/*public void setDeparture(double departure) {
 		this.departure = departure;
-	}
+	}*/
 	public boolean getState() {
 		return state;
 	}
-	public void setState(boolean state) {
+	/*public void setState(boolean state) {
 		this.state = state;
-	}
+	}*/
 	
 }

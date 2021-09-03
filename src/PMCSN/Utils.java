@@ -3,6 +3,7 @@ package PMCSN;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class Utils {
 	
@@ -16,26 +17,32 @@ public class Utils {
 	  }
 	}
 	
-	public static void topicSplitter(Job job) {
+	public static void topicSplitter(Job job, ArrayList<Job> fQueue, ArrayList<Job> bQueue, ArrayList<Job> wQueue, ArrayList<Job> rQueue) {
+		
 		if (job.getTopic() == 'F') {
-			ServerFrontend.fJobs.add(job);
-			System.out.println("questa è la size della coda  frontend: " + ServerFrontend.fJobs.size());
+			//System.out.println("sto nell'if del frontend: " + job.getTopic());
+			fQueue.add(job);
+			//System.out.println("questa è la size della coda  frontend: " + ServerFrontend.fJobs.size());
 
 		} else if (job.getTopic() == 'B') {
-			ServerBackend.bJobs.add(job);
-			System.out.println("questa è la size della coda dei blog: " + ServerBackend.bJobs.size());
+			//System.out.println("sto nell'if del backend: " + job.getTopic());
+			bQueue.add(job);
+			//System.out.println("questa è la size della coda dei blog: " + ServerBackend.bJobs.size());
 
 		} else if (job.getTopic() == 'W') {
-			ServerWordpress.wJobs.add(job);
-			System.out.println("questa è la size della coda dei blog: " + ServerWordpress.wJobs.size());
+			//System.out.println("sto nell'if del wordpress: " + job.getTopic());
+			wQueue.add(job);
+			//System.out.println("questa è la size della coda dei blog: " + ServerWordpress.wJobs.size());
 
 		} else if (job.getTopic() == 'R') {
-			ServerBlog.rJobs.add(job);
-			System.out.println("questa è la size della coda dei blog: " + ServerBlog.rJobs.size());
+			//System.out.println("sto nell'if del blog: " + job.getTopic());
+			rQueue.add(job);
+			//System.out.println("questa è la size della coda dei blog: " + ServerBlog.rJobs.size());
 		}
+		
 	}
 	
-	public static void checkState(Job job) {
+	/*public static void checkState(Job job) {
 		if (Generator.getWeighBoolean(80) == true) {
 			DecimalFormat f = new DecimalFormat("###0.00");
 			//System.out.println("   type of the job .. =   " + job.getTopic());
@@ -48,6 +55,6 @@ public class Utils {
 			topicSplitter(job);
 		} 
 		
-	}
+	}*/
 
 }
