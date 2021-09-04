@@ -18,20 +18,36 @@ public class ServerFrontend implements Runnable {
         double totalService = 0;
         double u = 0.8;
 
+        int counter = 0;
+
         try {
         	
         	while(index < Ssq2.LAST) {
                 TimeUnit.MICROSECONDS.sleep(1000);
-                if (fJobs.isEmpty()) {
-                	System.out.println("coda del frontend vuota");
+                if (fJobs.size() > 0) {
+					job = fJobs.get(0);
+					//System.out.println("job del frontend: " + job.getTopic() + ":" + fJobs.get(0).getTopic());
+
+					if (job == null) {
+						System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+						index++;
+						continue;
+					} else {
+						counter++;
+						System.out.println("vuoto?" + fJobs.isEmpty() + " " + fJobs.get(0));
+						fJobs.remove(0);
+					}
+
+                } else {
+					//System.out.println("coda del frontend vuota");
+					index++;
+					continue;
+                }
+                if (job == null) {
+                	System.out.println("Questo job per qualche motivo è null");
                 	index++;
                 	continue;
-                } else {
-                	job = fJobs.get(0);
-                	System.out.println("job del frontend: " + job.getTopic() + ":" + fJobs.get(0).getTopic());
-                	fJobs.remove(0);
-                }
-                
+				}
                 if (job.getArrival() < job.getDeparture()) {
               	  delay = job.getDeparture() - job.getArrival(); 	// delay in queue 
                 } else {
@@ -53,11 +69,14 @@ public class ServerFrontend implements Runnable {
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }
-        
-        /* STUPIDI QUESTO NON LO STAMPERÀ MAI PERCHÉ ALLA FINE DEL LOOP LA CODA SI SARÀ SVUOTATA */
-        for (Job elem: fJobs) {
+        System.out.println("JOB F VALIDI: " + counter);
+
+        /* STUPIDI QUESTO NON LO STAMPERÀ MAI PERCHÉ ALLA FINE DEL LOOP LA CODA SI SARÀ SVUOTATA
+        *  (colpo di scena: e invece una volta l'ha stampato!!!)
+        *  */
+       /* for (Job elem: fJobs) {
     		System.out.println("è arrivato il job n. " + elem.getSqn() + "del tipo " + elem.getTopic());
-    	}
+    	}*/
 
         
     }

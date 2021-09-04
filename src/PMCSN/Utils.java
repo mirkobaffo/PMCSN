@@ -17,26 +17,26 @@ public class Utils {
 	  }
 	}
 	
-	public static void topicSplitter(Job job, ArrayList<Job> fQueue, ArrayList<Job> bQueue, ArrayList<Job> wQueue, ArrayList<Job> rQueue) {
+	public static void topicSplitter(Job job) {
 		
 		if (job.getTopic() == 'F') {
 			//System.out.println("sto nell'if del frontend: " + job.getTopic());
-			fQueue.add(job);
+			ServerFrontend.fJobs.add(job);
 			//System.out.println("questa è la size della coda  frontend: " + ServerFrontend.fJobs.size());
 
 		} else if (job.getTopic() == 'B') {
 			//System.out.println("sto nell'if del backend: " + job.getTopic());
-			bQueue.add(job);
+			ServerBackend.bJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerBackend.bJobs.size());
 
 		} else if (job.getTopic() == 'W') {
 			//System.out.println("sto nell'if del wordpress: " + job.getTopic());
-			wQueue.add(job);
+			ServerWordpress.wJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerWordpress.wJobs.size());
 
 		} else if (job.getTopic() == 'R') {
 			//System.out.println("sto nell'if del blog: " + job.getTopic());
-			rQueue.add(job);
+			ServerBlog.rJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerBlog.rJobs.size());
 		}
 		

@@ -19,15 +19,27 @@ public class ServerBackend implements Runnable {
         double u = 0.8;
         double uV = 1;
 
+        int counter = 0;
+
         try {
         	
         	while(index < Ssq2.LAST){
                 TimeUnit.MICROSECONDS.sleep(1000);
-                if (bJobs.isEmpty()) {
-                	continue;
+                if (bJobs.size() > 0) {
+                    job = bJobs.get(0);
+                    if (job == null) {
+                        System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+                        index++;
+                        continue;
+                    } else {
+                        counter++;
+                        System.out.println("vuoto?" + bJobs.isEmpty() + " " + bJobs.get(0));
+                        bJobs.remove(0);
+                    }
+
                 } else {
-                	job = bJobs.get(0);
-                	bJobs.remove(0);
+                    index++;
+                    continue;
                 }
                 
                 if (job.getArrival() < job.getDeparture()) {
@@ -52,6 +64,8 @@ public class ServerBackend implements Runnable {
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }
+
+        System.out.println("JOB B VALIDI: " + counter);
 
     }
 }

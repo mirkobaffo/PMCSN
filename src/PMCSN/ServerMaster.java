@@ -8,16 +8,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class ServerMaster implements Runnable {
-	
-	/*private final ThreadObject threadObject;
-
-    public void workingTask(ThreadObject workingObject) {
-        threadObject = workingObject;
-    }*/
 
 	public static long end;
-    public static ArrayList<ArrayList<Job>> all = new ArrayList<>();
-
 
     public void run() {
     	
@@ -30,15 +22,6 @@ public class ServerMaster implements Runnable {
         double departure = Ssq2.START;
         double totalService = 0;
         double u = 5.45;
-        
-		ArrayList<Job> fQueue = new ArrayList<>();
-		ArrayList<Job> bQueue = new ArrayList<>();
-		ArrayList<Job> rQueue = new ArrayList<>();
-		ArrayList<Job> wQueue = new ArrayList<>();
-		all.add(fQueue);
-		all.add(bQueue);
-		all.add(wQueue);
-		all.add(rQueue);
 		
         try {
 
@@ -120,25 +103,30 @@ public class ServerMaster implements Runnable {
 				/*if (!fQueue.isEmpty()) {
 					System.out.println("primo elemento di frontend all'iterazione " + index + ": " + fQueue.get(0).getTopic() + "\n");
 				}*/
-				Utils.topicSplitter(job, fQueue, bQueue, wQueue, rQueue);
+				Utils.topicSplitter(job);
 	            index++; 
 	        }
-	        System.out.println("coda frontend: \n");
-			for (Job elem: fQueue) {
+
+	       /* System.out.println("coda frontend: \n");
+			for (Job elem: ServerFrontend.fJobs) {
+				System.out.println("job: " + elem.getSqn() + ": " + elem.getArrival());
 				System.out.println(elem.getTopic() + "\n");
 			}
 			System.out.println("coda backend: \n");
-			for (Job elem: bQueue) {
+			for (Job elem: ServerBackend.bJobs) {
+				System.out.println("job: " + elem.getSqn() + ": " + elem.getArrival());
 				System.out.println(elem.getTopic() + "\n");
 			}
 			System.out.println("coda wordpress: \n");
-			for (Job elem: wQueue) {
+			for (Job elem: ServerWordpress.wJobs) {
+				System.out.println("job: " + elem.getSqn() + ": " + elem.getArrival());
 				System.out.println(elem.getTopic() + "\n");
 			}
 			System.out.println("coda blog: \n");
-			for (Job elem: rQueue) {
+			for (Job elem: ServerBlog.rJobs) {
+				System.out.println("job: " + elem.getSqn() + ": " + elem.getArrival());
 				System.out.println(elem.getTopic() + "\n");
-			}
+			}*/
 	        //writer.close();
         
         /*} catch (IOException e) {
@@ -148,7 +136,11 @@ public class ServerMaster implements Runnable {
     	}
 		//job.setInterarrival(job.getArrival() - Ssq2.START);
 		DecimalFormat f = new DecimalFormat("###0.00");
-		
+		System.out.println("Valore della wait dell'ultimo job: " + job.getWait());
+		System.out.println("Valore del service dell'ultimo job: " + job.getService());
+		System.out.println("Valore del delay dell'ultimo job: " + job.getDelay());
+		System.out.println("Valore di index: " + index);
+
 		System.out.println("\nfor " + index + " jobs");
 		System.out.println("   average interarrival time =   " + f.format(job.getInterarrival() / index));
 		System.out.println("   average wait ............ =   " + f.format(job.getWait() / index));
