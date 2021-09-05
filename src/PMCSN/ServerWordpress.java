@@ -4,18 +4,20 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class ServerWordpress implements Runnable {
+/*public class ServerWordpress implements Runnable {
 	
 	public static ArrayList<Job> wJobs = new ArrayList<>();
 
 	public void run() {
-		Job job = new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
+    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false);
     	int index = 0;
-    	double delay;                                 // delay in queue
-        double service;                               // service time
-        double wait;                                  // delay + service
+    	double delay = Ssq2.START; 									// delay in queue
+        double arrival = Ssq2.START;
+    	double response = Ssq2.START;
+    	double service = Ssq2.START;                               // service time
+        double wait = Ssq2.START;                                  // delay + service
         double departure = Ssq2.START;
-        double totalService = 0;
+        double totalService = Ssq2.START;
 		//service time
 		double u = 1.0;
 
@@ -24,12 +26,11 @@ public class ServerWordpress implements Runnable {
         try {
 
 			while (index < Ssq2.LAST) {
+				Job temp;
 				TimeUnit.MICROSECONDS.sleep(1000);
 				if (wJobs.size() > 0) {
-					job = wJobs.get(0);
-
-					if (job == null) {
-						//System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+					temp = wJobs.get(0);
+					if (temp == null) {
 						index++;
 						continue;
 					} else {
@@ -37,49 +38,59 @@ public class ServerWordpress implements Runnable {
 						System.out.println(wJobs.get(0) + " " + wJobs.get(0).getArrival());
 						wJobs.remove(0);
 					}
-
-
 				} else {
 					index++;
 					continue;
 				}
 
-
-			if (job.getArrival() < job.getDeparture()) {
-				delay = job.getDeparture() - job.getArrival();    // delay in queue
-			} else {
-				delay = 0.0;                                     // no delay
-			}
-			service = Arrival.getService(Ssq2.r, u);
-			wait = delay + service;
-			departure = job.getArrival() + wait;                  // time of departure
-
-    			totalService = totalService + service;
-
-    			//job.setState(true);
+				if (temp.getArrival() < departure) {
+	            	  delay = departure - temp.getArrival(); 	// delay in queue 
+	            } else {
+	            	  delay = Ssq2.START;      							 // no delay   
+	            }
+				service = Arrival.getService(Ssq2.r, u);  // del job corrente
+				response = wait + service;
+				departure += temp.getArrival() + wait;    // time of departure del job corrente
+				arrival = temp.getArrival() + response;
+				job = new Job(temp.getInterarrival(), arrival, delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, true);
+				totalService += service;
+				wait = delay + service;		// attesa in coda del job successivo
     			Utils.prioSplitter(job);
-
-			index++;
-		}
+    			index++;
+			}
         	
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }
 
+		DecimalFormat f = new DecimalFormat("#.######");
+		System.out.println("Server Wordpress\n");
+		System.out.println("\nfor " + index + " jobs");
+		System.out.println("   average interarrival time =   " + f.format(job.getInterarrival() / index));
+		System.out.println("   average wait ............ =   " + f.format(job.getWait() / index));
+		System.out.println("   average delay ........... =   " + f.format(job.getDelay() / index));
+		System.out.println("   average service time .... =   " + f.format(totalService / index));
+		System.out.println("   average # in the node ... =   " + f.format(job.getWait() / departure));
+		System.out.println("   average # in the queue .. =   " + f.format(job.getDelay() / departure));
+		System.out.println("   utilization ............. =   " + f.format(totalService / departure));
+		
 		System.out.println("JOB W VALIDI: " + counter);
 
 	}
 
 
-}
+}*/
 
-/*public class ServerWordpress implements Runnable {
+public class ServerWordpress implements Runnable {
 
 	static double START   = 0.0;            // initial (open the door)
 	static double STOP    = 20000.0;        // terminal (close the door) time
-	static int    SERVERS = 4;              // number of servers
+	static int    SERVERS = 2;              // number of servers
 
 	static double sarrival = START;
+	static double u = 1.0;
+
+	public static ArrayList<Job> wJobs = new ArrayList<>();
 
 	class MsqT {
 		double current;                   // current time
@@ -104,8 +115,11 @@ public class ServerWordpress implements Runnable {
 		long   index  = 0;             // used to count processed jobs
 		double area   = 0.0;           // time integrated number in the node
 		double service;
+		int counter = 0;
+		
+    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false);
 
-		//da rimediare rngs
+		
 		Rngs r = new Rngs();
 		r.plantSeeds(0);
 
@@ -120,7 +134,7 @@ public class ServerWordpress implements Runnable {
 		PMCSN.MsqT t = new PMCSN.MsqT();
 
 		t.current    = Msq.START;
-		event[0].t   = getArrival(r);
+		event[0].t   = Arrival.getMultiArrival(r);
 		event[0].x   = 1;
 		for (s = 1; s <= Msq.SERVERS; s++) {
 			event[s].t     = Msq.START;          // this value is arbitrary because
@@ -130,6 +144,24 @@ public class ServerWordpress implements Runnable {
 		}
 
 		while ((event[0].x != 0) || (number != 0)) {
+			
+			Job temp;
+			TimeUnit.MICROSECONDS.sleep(1000);
+			if (wJobs.size() > 0) {
+				temp = wJobs.get(0);
+				if (temp == null) {
+					index++;
+					continue;
+				} else {
+					counter++;
+					System.out.println(wJobs.get(0) + " " + wJobs.get(0).getArrival());
+					wJobs.remove(temp);
+				}
+			} else {
+				index++;
+				continue;
+			}
+
 			e         = nextEvent(event);                // next event index
 			t.next    = event[e].t;                        // next event time
 			area     += (t.next - t.current) * number;     // update integral
@@ -141,7 +173,7 @@ public class ServerWordpress implements Runnable {
 				if (event[0].t > Msq.STOP)
 					event[0].x      = 0;
 				if (number <= Msq.SERVERS) {
-					service         = getService(r);
+					service         = Arrival.getMultiService(r, u);
 					s               = findOne(event);
 					sum[s].service += service;
 					sum[s].served++;
@@ -154,7 +186,7 @@ public class ServerWordpress implements Runnable {
 				number--;
 				s                 = e;
 				if (number >= Msq.SERVERS) {
-					service         = getService(r);
+					service         = Arrival.getMultiService(r, u);
 					sum[s].service += service;
 					sum[s].served++;
 					event[s].t      = t.current + service;
@@ -185,38 +217,6 @@ public class ServerWordpress implements Runnable {
 		}
 
 		System.out.println("");
-	}
-
-	double exponential(double m, Rngs r) {
-
-		 // generate an Exponential random variate, use m > 0.0
-
-		return (-m * Math.log(1.0 - r.random()));
-	}
-
-	double uniform(double a, double b, Rngs r) {
-
-		 // generate a Uniform random variate, use a < b
-
-		return (a + (b - a) * r.random());
-	}
-
-	double getArrival(Rngs r) {
-
-		 // generate the next arrival time, with rate 1/2
-
-		r.selectStream(0);
-		Ssq2.sarrival += exponential(2.0, r);
-		return (Ssq2.sarrival);
-	}
-
-
-	double getService(Rngs r) {
-
-		// generate the next service time, with rate 1/6
-
-		r.selectStream(1);
-		return (uniform(2.0, 10.0, r));
 	}
 
 	int nextEvent(MsqEvent[] event) {
@@ -256,7 +256,7 @@ public class ServerWordpress implements Runnable {
 
 
 
-}*/
+}
 
 
 

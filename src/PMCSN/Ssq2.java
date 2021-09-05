@@ -72,12 +72,12 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     	} catch (InterruptedException e) {
     		e.printStackTrace();
     	}
-      
+    	
       priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
       label = Generator.getRandomTopic(minLabel, maxLabel);
 	  interarrival = Arrival.getArrival(sarrival, r, lambda);
       arrival += interarrival;
-	  Job job = new Job(interarrival, arrival, 0.0, departure, priority, label, index, 0.0, 0.0, 0.0, false);
+	  Job job = new Job(interarrival, arrival, Ssq2.START, departure, priority, label, index, Ssq2.START, Ssq2.START, Ssq2.START, false);
 	  Utils.prioSplitter(job);
 	  sarrival = arrival;
 	  index++;

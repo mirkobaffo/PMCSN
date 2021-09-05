@@ -7,12 +7,15 @@ public class Generator {
 	}
 		
 	
-	public static double exponentialGenerator(double m, Rng r) {
+	public static double exponentialGenerator(double m, Rngs g, Rng r) {
 		/* ---------------------------------------------------
 		 * generate an Exponential random variate, use m > 0.0
 		 * ---------------------------------------------------
 		 */
+		if (g == null)
 		    return (-m * Math.log(1.0 - r.random()));
+		else
+			return (-m * Math.log(1.0 - g.random()));
 	}
 	
 	public static boolean getWeighBoolean(int percentage) { 

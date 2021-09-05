@@ -9,14 +9,15 @@ public class ServerMaster implements Runnable {
 
     public void run() {
     	
-    	Job job = new Job(0.0,0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
+    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false);
     	int index = 0;
     	int counter = 0;
-    	double delay;                                 /* delay in queue       */
-        double service;                               /* service time         */
-        double wait;                                  /* delay + service      */
+    	double delay;                                 /* delay in queue */
+        double service;                               /* service time */
+        double wait = Ssq2.START;  								/* delay + service */
+        double response = Ssq2.START;
         double departure = Ssq2.START;
-        double totalService = 0.0;
+        double totalService = Ssq2.START;
         double u = 5.45;
 		
         try {
@@ -49,16 +50,17 @@ public class ServerMaster implements Runnable {
 	            	continue;
 	            }
 	            
-	            if (temp.getArrival() < temp.getDeparture()) {
-	            	  delay = temp.getDeparture() - temp.getArrival(); 	// delay in queue 
+	            if (temp.getArrival() < departure) {
+	            	  delay = departure - temp.getArrival(); 	// delay in queue 
 	            } else {
-	            	  delay = 0.0;      							 // no delay   
+	            	  delay = Ssq2.START;      							 // no delay   
 	            }
-				service = Arrival.getService(Ssq2.r, u);  // del job precedente
-				wait = delay + service;		// del job successivo
-				departure += temp.getArrival() + wait;    // time of departure del job precedente
-				job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, temp.getResponse(), temp.getState());
+				service = Arrival.getService(Ssq2.r, u);  // del job corrente
+				response = wait + service;
+				departure += temp.getArrival() + wait;    // time of departure del job corrente
+				job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, temp.getState());
 				totalService += service;
+				wait = delay + service;		// attesa in coda del job successivo
 				Utils.topicSplitter(job);
 	            index++; 
 	        }
@@ -91,12 +93,8 @@ public class ServerMaster implements Runnable {
     		e.printStackTrace();
     	}
 
-		DecimalFormat f = new DecimalFormat("###0.00");
-		System.out.println("Valore della wait dell'ultimo job: " + job.getWait());
-		System.out.println("Valore del service dell'ultimo job: " + job.getService());
-		System.out.println("Valore del delay dell'ultimo job: " + job.getDelay());
-		System.out.println("Valore di index: " + index);
-
+		DecimalFormat f = new DecimalFormat("#.######");
+		System.out.println("Server Master\n");
 		System.out.println("\nfor " + index + " jobs");
 		System.out.println("   average interarrival time =   " + f.format(job.getInterarrival() / index));
 		System.out.println("   average wait ............ =   " + f.format(job.getWait() / index));
