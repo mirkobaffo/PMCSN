@@ -9,7 +9,7 @@ public class ServerFrontend implements Runnable {
 	
 	public void run() {
 		
-    	Job job = new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
+    	Job job; //= new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
     	int index = 0;
     	double delay;                                 /* delay in queue       */
         double service;                               /* service time         */
@@ -23,45 +23,35 @@ public class ServerFrontend implements Runnable {
         try {
         	
         	while(index < Ssq2.LAST) {
+        		Job temp;
                 TimeUnit.MICROSECONDS.sleep(1000);
                 if (fJobs.size() > 0) {
-					job = fJobs.get(0);
-					//System.out.println("job del frontend: " + job.getTopic() + ":" + fJobs.get(0).getTopic());
-
-					if (job == null) {
-						System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+					temp = fJobs.get(0);
+					if (temp == null) {
 						index++;
 						continue;
 					} else {
 						counter++;
-						System.out.println("vuoto?" + fJobs.isEmpty() + " " + fJobs.get(0));
-						fJobs.remove(0);
+						System.out.println(temp + " " + temp.getArrival());
+						fJobs.remove(temp);
 					}
-
                 } else {
-					//System.out.println("coda del frontend vuota");
 					index++;
 					continue;
                 }
-                if (job == null) {
-                	System.out.println("Questo job per qualche motivo è null");
-                	index++;
-                	continue;
-				}
-                if (job.getArrival() < job.getDeparture()) {
-              	  delay = job.getDeparture() - job.getArrival(); 	// delay in queue 
+
+                if (temp.getArrival() < temp.getDeparture()) {
+              	  delay = temp.getDeparture() - temp.getArrival(); 	// delay in queue
                 } else {
               	  delay = 0.0;      								 // no delay   
                 }
     			service = Arrival.getService(Ssq2.r, u);
     			wait = delay + service;
-    			departure = job.getArrival() + wait;            	  // time of departure 
-    			/*job.setDelay(job.getDelay() + delay);
-    			job.setWait(job.getWait() + wait);
-    			job.setService(job.getService() + service);*/
-    			totalService = totalService + service;
+    			departure = temp.getArrival() + wait;            	  // time of departure
+				totalService = totalService + service;
 
-    			//job.setState(true); // setto lo stato del job a true, cioè servito e da revisionare
+				/* setto lo stato a true */
+				job = new Job(temp.getArrival(), temp.getDelay() + delay, departure, temp.getPriority(), temp.getTopic(), temp.getSqn(), temp.getWait() + wait, service, temp.getResponse(), true);
     			Utils.prioSplitter(job);
     			index++;    			
             }
@@ -70,15 +60,6 @@ public class ServerFrontend implements Runnable {
         	e.printStackTrace();
         }
         System.out.println("JOB F VALIDI: " + counter);
-
-        /* STUPIDI QUESTO NON LO STAMPERÀ MAI PERCHÉ ALLA FINE DEL LOOP LA CODA SI SARÀ SVUOTATA
-        *  (colpo di scena: e invece una volta l'ha stampato!!!)
-        *  */
-       /* for (Job elem: fJobs) {
-    		System.out.println("è arrivato il job n. " + elem.getSqn() + "del tipo " + elem.getTopic());
-    	}*/
-
-        
     }
 
 }

@@ -28,12 +28,12 @@ public class ServerWordpress implements Runnable {
 					job = wJobs.get(0);
 
 					if (job == null) {
-						System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+						//System.out.println("Questo job è null e quindi forse per questo esplode tutto");
 						index++;
 						continue;
 					} else {
 						counter++;
-						System.out.println("vuoto?" + wJobs.isEmpty() + " " + wJobs.get(0));
+						System.out.println(wJobs.get(0) + " " + wJobs.get(0).getArrival());
 						wJobs.remove(0);
 					}
 

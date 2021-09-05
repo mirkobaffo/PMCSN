@@ -20,7 +20,7 @@ public class ServerMaster implements Runnable {
         double service;                               /* service time         */
         double wait;                                  /* delay + service      */
         double departure = Ssq2.START;
-        double totalService = 0;
+        double totalService = 0.0;
         double u = 5.45;
 		
         try {
@@ -94,11 +94,11 @@ public class ServerMaster implements Runnable {
 				service = Arrival.getService(Ssq2.r, u);
 				wait = delay + service;
 				departure = temp.getArrival() + wait;    // time of departure
-				job = new Job(temp.getArrival(), temp.getDelay() + delay, temp.getDeparture(), temp.getPriority(), temp.getTopic(), temp.getSqn(), temp.getWait() + wait, temp.getService() + service, temp.getService(), temp.getState());
+				job = new Job(temp.getArrival(), temp.getDelay() + delay, temp.getDeparture() + departure, temp.getPriority(), temp.getTopic(), temp.getSqn(), temp.getWait() + wait, service, temp.getResponse(), temp.getState());
 				/*temp.setDelay(temp.getDelay() + delay);
 				temp.setWait(temp.getWait() + wait);
 				temp.setService(temp.getService() + service);*/
-				totalService = totalService + service;
+				totalService += service;
 				
 				/*if (!fQueue.isEmpty()) {
 					System.out.println("primo elemento di frontend all'iterazione " + index + ": " + fQueue.get(0).getTopic() + "\n");

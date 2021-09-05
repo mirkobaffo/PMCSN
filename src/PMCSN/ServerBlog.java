@@ -30,12 +30,12 @@ public class ServerBlog implements Runnable {
 					job = rJobs.get(0);
 
 					if (job == null) {
-						System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+						//System.out.println("Questo job è null e quindi forse per questo esplode tutto");
 						index++;
 						continue;
 					} else {
 						counter++;
-						System.out.println("vuoto?" + rJobs.isEmpty() + " " + rJobs.get(0));
+						System.out.println(rJobs.get(0) + " " + rJobs.get(0).getArrival());
 						rJobs.remove(0);
 					}
 

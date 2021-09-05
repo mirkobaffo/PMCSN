@@ -28,12 +28,12 @@ public class ServerBackend implements Runnable {
                 if (bJobs.size() > 0) {
                     job = bJobs.get(0);
                     if (job == null) {
-                        System.out.println("Questo job è null e quindi forse per questo esplode tutto");
+                        //System.out.println("Questo job è null e quindi forse per questo esplode tutto");
                         index++;
                         continue;
                     } else {
                         counter++;
-                        System.out.println("vuoto?" + bJobs.isEmpty() + " " + bJobs.get(0));
+                        System.out.println(bJobs.get(0) + " " + bJobs.get(0).getArrival());
                         bJobs.remove(0);
                     }
 

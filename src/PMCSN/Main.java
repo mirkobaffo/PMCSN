@@ -1,8 +1,8 @@
 package PMCSN;
 
-/* 1. rimettere le code globali ora che il problema è risolto e non era quello - bug oggetti Job mutable fixato)
- * 2. capire perché le stampe danno tutti 0.00
- * 3. boh continua a testare con gli altri server e con tutti insieme
+/*
+ * 1. capire perché le stampe danno tutti 0.00
+ * 2. boh continua a testare con gli altri server e con tutti insieme
  */
 
 public class Main {
