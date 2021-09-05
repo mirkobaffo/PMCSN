@@ -39,16 +39,5 @@ public class Generator {
 		}
 		return ret;
 	}
-
-	/*
-	 * sbagliato perché gli ARRIVI sono poissoniani, 
-	 * mentre gli INTERARRIVI sono esponenziali
-	 * 
-	 * public static int poissonGenerator() {
-		int seed = 6; //10 arrivi/ora
-		PoissonDistribution distribution = new PoissonDistribution(seed);
-		int interarrival = distribution.sample();
-		return interarrival;
-	}*/
 	
 }

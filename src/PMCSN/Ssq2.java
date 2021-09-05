@@ -14,10 +14,7 @@ package PMCSN;
  * ------------------------------------------------------------------------- 
  */
 
-import java.io.*;
 import java.lang.*;
-import java.rmi.UnexpectedException;
-import java.text.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -35,8 +32,8 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
   static int minPrioValue = 1;
   static int maxPrioValue = 4;
   
-  static int minTopic = 1;
-  static int maxTopic = 5;
+  static int minLabel = 1;
+  static int maxLabel = 5;
   static char frontend = 'F';
   static char backend = 'B';
   static char wordpress = 'W';
@@ -53,11 +50,12 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
 
   public void run() {
     
-    int   index     = 0;   							/* job index            */
+    int   index     = 0;                    /* job index            */
+    double interarrival = START;
     double arrival   = START;             /* time of arrival      */
     double departure = START;  					/* time of departure    */
     int priority;
-    char topic;
+    char label;
 
     
     //Job job = new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
@@ -76,14 +74,10 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     	}
       
       priority = Generator.getRandomInRange(minPrioValue, maxPrioValue);
-      topic = Generator.getRandomTopic(minTopic, maxTopic);
-	  arrival = Arrival.getArrival(sarrival, r, lambda);   // l'istante di arrivo del job
-	 /* job.setArrival(arrival);
-	  job.setPriority(priority);
-	  job.setTopic(topic);
-	  job.setSqn(index);
-	  job.setDeparture(departure);*/
-	  Job job = new Job(arrival, 0.0, departure, priority, topic, index, 0.0, 0.0, 0.0, false);
+      label = Generator.getRandomTopic(minLabel, maxLabel);
+	  interarrival = Arrival.getArrival(sarrival, r, lambda);
+      arrival += interarrival;
+	  Job job = new Job(interarrival, arrival, 0.0, departure, priority, label, index, 0.0, 0.0, 0.0, false);
 	  Utils.prioSplitter(job);
 	  sarrival = arrival;
 	  index++;

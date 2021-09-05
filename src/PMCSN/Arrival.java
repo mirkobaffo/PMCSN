@@ -10,7 +10,7 @@ public class Arrival {
 		 */
 //		    static double sarrival = START;
 
-		    sarrival += Generator.exponentialGenerator(m, r);
+		    sarrival = Generator.exponentialGenerator(m, r);
 		    return (sarrival);
 		  }
 	

@@ -9,7 +9,7 @@ public class ServerFrontend implements Runnable {
 	
 	public void run() {
 		
-    	Job job; //= new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
+    	Job job;
     	int index = 0;
     	double delay;                                 /* delay in queue       */
         double service;                               /* service time         */
@@ -21,6 +21,8 @@ public class ServerFrontend implements Runnable {
         int counter = 0;
 
         try {
+
+        	//Qui dobbiamo implementare gli arrivi, sarebbero arrival + response (che ancora non calcoliamo)
         	
         	while(index < Ssq2.LAST) {
         		Job temp;
@@ -47,11 +49,11 @@ public class ServerFrontend implements Runnable {
                 }
     			service = Arrival.getService(Ssq2.r, u);
     			wait = delay + service;
-    			departure = temp.getArrival() + wait;            	  // time of departure
-				totalService = totalService + service;
+    			departure += temp.getArrival() + wait;            	  // time of departure
+				totalService += service;
 
 				/* setto lo stato a true */
-				job = new Job(temp.getArrival(), temp.getDelay() + delay, departure, temp.getPriority(), temp.getTopic(), temp.getSqn(), temp.getWait() + wait, service, temp.getResponse(), true);
+				job = new Job(temp.getInterarrival(), temp.getArrival(), temp.getDelay() + delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), temp.getWait() + wait, service, temp.getResponse(), true);
     			Utils.prioSplitter(job);
     			index++;    			
             }

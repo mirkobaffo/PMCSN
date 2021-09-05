@@ -1,10 +1,5 @@
 package PMCSN;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-
 public class Utils {
 	
 	public static void prioSplitter(Job job) {
@@ -19,22 +14,22 @@ public class Utils {
 	
 	public static void topicSplitter(Job job) {
 		
-		if (job.getTopic() == 'F') {
+		if (job.getLabel() == 'F') {
 			//System.out.println("sto nell'if del frontend: " + job.getTopic());
 			ServerFrontend.fJobs.add(job);
 			//System.out.println("questa è la size della coda  frontend: " + ServerFrontend.fJobs.size());
 
-		} else if (job.getTopic() == 'B') {
+		} else if (job.getLabel() == 'B') {
 			//System.out.println("sto nell'if del backend: " + job.getTopic());
 			ServerBackend.bJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerBackend.bJobs.size());
 
-		} else if (job.getTopic() == 'W') {
+		} else if (job.getLabel() == 'W') {
 			//System.out.println("sto nell'if del wordpress: " + job.getTopic());
-			ServerWordpress.wJobs.add(job);
+			//ServerWordpress.wJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerWordpress.wJobs.size());
 
-		} else if (job.getTopic() == 'R') {
+		} else if (job.getLabel() == 'R') {
 			//System.out.println("sto nell'if del blog: " + job.getTopic());
 			ServerBlog.rJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerBlog.rJobs.size());
