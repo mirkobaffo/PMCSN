@@ -9,7 +9,7 @@ public class ServerMaster implements Runnable {
 
     public void run() {
     	
-    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false);
+    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
     	int index = 0;
     	int counter = 0;
     	double delay;                                 /* delay in queue */
@@ -18,6 +18,7 @@ public class ServerMaster implements Runnable {
         double response = Ssq2.START;
         double departure = Ssq2.START;
         double totalService = Ssq2.START;
+        double time = Ssq2.START; // è l'arrivo nel server successivo
         double u = 5.45;
 		
         try {
@@ -58,7 +59,8 @@ public class ServerMaster implements Runnable {
 				service = Arrival.getService(Ssq2.r, u);  // del job corrente
 				response = wait + service;
 				departure += temp.getArrival() + wait;    // time of departure del job corrente
-				job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, temp.getState());
+				time = temp.getArrival() + wait + service;
+				job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, temp.getState(), time);
 				totalService += service;
 				wait = delay + service;		// attesa in coda del job successivo
 				Utils.topicSplitter(job);

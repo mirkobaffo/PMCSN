@@ -57,9 +57,6 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     int priority;
     char label;
 
-    
-    //Job job = new Job(0.0, 0.0, 0.0, 0, 'A', 0, 0.0, 0.0, 0.0, false);
-      
     r.putSeed(123456789);
     
 	queue.add(hQueue);
@@ -77,7 +74,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
       label = Generator.getRandomTopic(minLabel, maxLabel);
 	  interarrival = Arrival.getArrival(sarrival, r, lambda);
       arrival += interarrival;
-	  Job job = new Job(interarrival, arrival, Ssq2.START, departure, priority, label, index, Ssq2.START, Ssq2.START, Ssq2.START, false);
+	  Job job = new Job(interarrival, arrival, Ssq2.START, departure, priority, label, index, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
 	  Utils.prioSplitter(job);
 	  sarrival = arrival;
 	  index++;
