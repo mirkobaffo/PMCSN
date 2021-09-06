@@ -92,7 +92,7 @@ public class ServerWordpress implements Runnable {
 
 	public static ArrayList<Job> wJobs = new ArrayList<>();
 
-	class MsqT {
+	class MsqT { // mantiene lo stato del server
 		double current;                   // current time
 		double next;                      // next (most imminent) event time
 	}
@@ -124,26 +124,26 @@ public class ServerWordpress implements Runnable {
 		r.plantSeeds(0);
 
 
-		MsqEvent [] event = new MsqEvent [Msq.SERVERS + 1];
+		MsqEvent [] event = new MsqEvent [Msq.SERVERS + 1];  // coda di eventi (job)
 		MsqSum [] sum = new MsqSum [Msq.SERVERS + 1];
 		for (s = 0; s < Msq.SERVERS + 1; s++) {
 			event[s] = new MsqEvent();
 			sum [s]  = new MsqSum();
 		}
 
-		PMCSN.MsqT t = new PMCSN.MsqT();
+		PMCSN.MsqT t = new PMCSN.MsqT(); // mantiene lo stato attuale del nodo?
 
-		t.current    = Msq.START;
-		event[0].t   = Arrival.getMultiArrival(r);
-		event[0].x   = 1;
+		t.current    = Msq.START;  // time corrente del nodo
+		event[0].t   = getArrival(r);  // assegno tempo di arrivo al primo job
+		event[0].x   = 1;  // setto lo stato del job a 1
 		for (s = 1; s <= Msq.SERVERS; s++) {
-			event[s].t     = Msq.START;          // this value is arbitrary because
-			event[s].x     = 0;              // all servers are initially idle
-			sum[s].service = 0.0;
+			event[s].t     = Msq.START;          // per tutti gli altri job inizializzo il tempo a 0
+			event[s].x     = 0;              	// e inzializzo lo stato a 0
+			sum[s].service = 0.0;				// inizializzo tutto a 0
 			sum[s].served  = 0;
 		}
 
-		while ((event[0].x != 0) || (number != 0)) {
+		while ((event[0].x != 0) || (number != 0)) {  // finché lo stato del job è diverso da 0 e il numero di job in esecuzione != 0
 			
 			Job temp;
 			TimeUnit.MICROSECONDS.sleep(1000);
@@ -162,8 +162,8 @@ public class ServerWordpress implements Runnable {
 				continue;
 			}
 
-			e         = nextEvent(event);                // next event index
-			t.next    = event[e].t;                        // next event time
+			e         = nextEvent(event);                // next event index dice qual è il prossimo job attivo che può essere mandato in esecuzione
+			t.next    = event[e].t;                        // next event time assegna al tempo del server il tempo di quel job
 			area     += (t.next - t.current) * number;     // update integral
 			t.current = t.next;                            // advance the clock
 

@@ -99,7 +99,7 @@ class Msq {
             else {                                         /* process a departure */
                 index++;                                     /* from server s       */
                 number--;
-                s                 = e;
+                s = e;
                 if (number >= SERVERS) {
                     service         = m.getService(r);
                     sum[s].service += service;
