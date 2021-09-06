@@ -12,10 +12,14 @@ public class Generator {
 		 * generate an Exponential random variate, use m > 0.0
 		 * ---------------------------------------------------
 		 */
-		if (g == null)
-		    return ((-m * Math.log(1.0 - r.random()))/1000);
-		else
-			return ((-m * Math.log(1.0 - g.random()))/1000);
+		if (g == null) {
+			//System.out.println("genero un arrivo: " + (-m * Math.log(1.0 - r.random())));
+			return ((-m * Math.log(1.0 - r.random())));
+		}
+		else {
+			//System.out.println("genero un arrivo: " + (-m * Math.log(1.0 - g.random())));
+			return ((-m * Math.log(1.0 - g.random())));
+		}
 	}
 	
 	public static boolean getWeighBoolean(int percentage) { 

@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerMaster implements Runnable {
 
 	public static long end;
+	public static double serviceAtMaxLoad;
 
     public void run() {
     	
@@ -56,12 +57,18 @@ public class ServerMaster implements Runnable {
 	            } else {
 	            	  delay = Ssq2.START;      							 // no delay   
 	            }
+
 				service = Arrival.getService(Ssq2.r, u);  // del job corrente
+
 				response = wait + service;
-				departure += temp.getArrival() + wait;    // time of departure del job corrente
+
+				departure = temp.getArrival() + wait;    // time of departure del job corrente
+
 				time = temp.getArrival() + wait + service;
+
 				job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, temp.getState(), time);
 				totalService += service;
+				serviceAtMaxLoad = totalService;
 				wait = delay + service;		// attesa in coda del job successivo
 				Utils.topicSplitter(job);
 	            index++; 
@@ -98,14 +105,16 @@ public class ServerMaster implements Runnable {
 		DecimalFormat f = new DecimalFormat("#.######");
 		System.out.println("Server Master\n");
 		System.out.println("\nfor " + index + " jobs");
-		System.out.println("   average interarrival time =   " + f.format(job.getInterarrival() / index));
+		System.out.println("   average interarrival time =   " + f.format(job.getArrival() / index));
 		System.out.println("   average wait ............ =   " + f.format(job.getWait() / index));
 		System.out.println("   average delay ........... =   " + f.format(job.getDelay() / index));
 		System.out.println("   average service time .... =   " + f.format(totalService / index));
 		System.out.println("   average # in the node ... =   " + f.format(job.getWait() / departure));
 		System.out.println("   average # in the queue .. =   " + f.format(job.getDelay() / departure));
 		System.out.println("   utilization ............. =   " + f.format(totalService / departure));
-		
+		System.out.println("utilizzazione vera alla fine degli arrivi: " + Ssq2.totalServiceFullQueue/job.getArrival());
+
+
 		end = System.currentTimeMillis();
 		System.out.println("Duration: " + (end-Ssq2.start) + "milliseconds");
     }

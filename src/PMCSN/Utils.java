@@ -26,7 +26,7 @@ public class Utils {
 
 		} else if (job.getLabel() == 'W') {
 			//System.out.println("sto nell'if del wordpress: " + job.getTopic());
-			//ServerWordpress.wJobs.add(job);
+			ServerWordpress.wJobs.add(job);
 			//System.out.println("questa è la size della coda dei blog: " + ServerWordpress.wJobs.size());
 
 		} else if (job.getLabel() == 'R') {

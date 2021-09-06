@@ -84,7 +84,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerWordpress implements Runnable {
 
 	static double START   = 0.0;            // initial (open the door)
-	static double STOP    = 20000.0;        // terminal (close the door) time
+	static double STOP    = 10000.0;        // terminal (close the door) time
 	static int    SERVERS = 2;              // number of servers
 
 	static double sarrival = START;
@@ -109,13 +109,14 @@ public class ServerWordpress implements Runnable {
 	
 
 	public void run() {
+
 		long   number = 0;             // number in the node
 		int    e;                      // next event index
 		int    s;                      // server index
 		long   index  = 0;             // used to count processed jobs
 		double area   = 0.0;           // time integrated number in the node
 		double service;
-		
+		double totalService = 0;
 		Rngs r = new Rngs();
 		r.plantSeeds(0);
 
@@ -127,10 +128,9 @@ public class ServerWordpress implements Runnable {
         }
 
         MsqT t = new MsqT();
-
         t.current    = START;
         if (!wJobs.isEmpty()) {
-        	event[0].t   = wJobs.get(0).getTime();	   
+        	event[0].t   = wJobs.get(0).getTime();
         	wJobs.remove(0);
 	        event[0].x   = 1;						
 	        for (s = 1; s <= SERVERS; s++) {
@@ -146,11 +146,10 @@ public class ServerWordpress implements Runnable {
             t.next = event[e].t;                        /* next event time  */
             area += (t.next - t.current) * number;     /* update integral  */
             t.current = t.next;                            /* advance the clock*/
-
             if (e == 0) {                                  /* process an arrival*/
                 number++;
                 if (!wJobs.isEmpty()) {
-	                event[0].t = wJobs.get(0).getTime();
+                    event[0].t = wJobs.get(0).getTime();
 	                wJobs.remove(0);
                 } else {
                 	continue;
@@ -159,6 +158,7 @@ public class ServerWordpress implements Runnable {
                     event[0].x = 0;
                 if (number <= SERVERS) {
                     service = Arrival.getMultiService(r, u);
+                    totalService += service;
                     s = findOne(event);
                     sum[s].service += service;
                     sum[s].served++;
@@ -185,15 +185,14 @@ public class ServerWordpress implements Runnable {
         DecimalFormat g = new DecimalFormat("####.###");
 
         System.out.println("\nfor " + index + " jobs the service node statistics are:\n");
-        System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / index));
+        System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / (index)));
         System.out.println("  avg wait ........... =   " + f.format(area / index));
         System.out.println("  avg # in node ...... =   " + f.format(area / t.current));
-
         for (s = 1; s <= SERVERS; s++)          /* adjust area to calculate */
             area -= sum[s].service;              /* averages for the queue   */
 
         System.out.println("  avg delay .......... =   " + f.format(area / index));
-        System.out.println("  avg # in queue ..... =   " + f.format(area / t.current));
+        System.out.println("  avg # in queue ..... =   " + f.format(area / (t.current)));
         System.out.println("\nthe server statistics are:\n");
         System.out.println("    server     utilization     avg service      share");
         for (s = 1; s <= SERVERS; s++) {

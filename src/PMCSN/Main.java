@@ -10,8 +10,13 @@ public class Main {
 	public static void main(String[] args) {
 		Thread ssq2 = new Thread(new Ssq2());
 		ssq2.start();
-        Thread master = new Thread(new ServerMaster());
+		for(int i= 0; i< 1000; i ++){
+			System.out.println("WAIT...");
+		}
+		Thread master = new Thread(new ServerMaster());
         master.start();
+		Thread backend = new Thread(new ServerBackend());
+		backend.start();
         /*for (int i = 0; i < 3; i++) {
 	        Thread backend = new Thread(new ServerBackend());
 	        backend.start();

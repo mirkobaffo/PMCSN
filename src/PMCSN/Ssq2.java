@@ -38,7 +38,8 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
   static char backend = 'B';
   static char wordpress = 'W';
   static char blog = 'R';
-  
+
+
   public static ArrayList<ArrayList<Job>> queue = new ArrayList<>();
   public static ArrayList<Job> hQueue = new ArrayList<>();
   public static ArrayList<Job> mQueue = new ArrayList<>();
@@ -46,7 +47,9 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
   
   public static Rng r = new Rng();
 
-  public static long start = System.currentTimeMillis();
+    public static double totalServiceFullQueue = 0.0;
+
+    public static long start = System.currentTimeMillis();
 
   public void run() {
     
@@ -57,7 +60,8 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     int priority;
     char label;
 
-    r.putSeed(123456789);
+
+      r.putSeed(123456789);
     
 	queue.add(hQueue);
 	queue.add(mQueue);
@@ -77,8 +81,10 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
 	  Job job = new Job(interarrival, arrival, Ssq2.START, departure, priority, label, index, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
 	  Utils.prioSplitter(job);
 	  sarrival = arrival;
+
 	  index++;
     }
+    totalServiceFullQueue = ServerMaster.serviceAtMaxLoad;
     
   }
 

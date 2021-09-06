@@ -152,17 +152,18 @@ class Rngs {
         }
         if (x == 0)
             while (!ok) {
-                try {
-                    System.out.print("\nEnter a positive integer seed (9 digits or less) >> ");
+              //  try {
+                   /* System.out.print("\nEnter a positive integer seed (9 digits or less) >> ");
                     String line;
                     InputStreamReader r = new InputStreamReader(System.in);
                     BufferedReader ReadThis = new BufferedReader(r);
 
-                    line = ReadThis.readLine();
-                    x = Long.parseLong(line);
-                } catch (IOException e) {
-                } catch (NumberFormatException nfe) {
-                }
+                    line = ReadThis.readLine(); */
+                    //x = Long.parseLong(line);
+                    x= 123456789;
+               // } catch (IOException e) {
+               // } catch (NumberFormatException nfe) {
+               // }
                 ok = (0 < x) && (x < MODULUS);
                 if (!ok)
                     System.out.println("\nInput out of range ... try again");
