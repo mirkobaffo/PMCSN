@@ -14,20 +14,13 @@ public final class Job {
 	private final double wait; //tempo di attesa
 	private final double service; //tempo di servizio
 	private final double response; //tempo di risposta
-	private final boolean state; /* lo stato del job può essere: 
-							true = servito (da revisionare), false = non servito  */
+	private final boolean state; // lo stato del job può essere: 
+							//true = servito (da revisionare), false = non servito  
+	private final double time;
 	
 	
 	
-	/*public void initParams() {
-	    delay = 0.0;
-	    wait = 0.0;
-	    service = 0.0;
-	    interarrival = 0.0;
-	}*/
-	
-	
-	public Job(double interarrival, double arrival, double delay, double departure, int priority, char label, int sqn, double wait, double service, double response, boolean state) {
+	public Job(double interarrival, double arrival, double delay, double departure, int priority, char label, int sqn, double wait, double service, double response, boolean state, double time) {
 
 		this.interarrival = interarrival;
 		this.arrival = arrival;
@@ -40,6 +33,7 @@ public final class Job {
 		this.service = service;
 		this.response = response;
 		this.state = state;
+		this.time = time;
 	}
 	
 	public double getInterarrival() {
@@ -107,5 +101,11 @@ public final class Job {
 	/*public void setState(boolean state) {
 		this.state = state;
 	}*/
+	public double getTime() {
+		return time;
+	}
+	
+
+
 	
 }

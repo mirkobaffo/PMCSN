@@ -10,7 +10,7 @@ public class ServerBlog implements Runnable {
 
 	
 	public void run() {
-    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false);
+    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
     	int index = 0;
     	double delay = Ssq2.START;                                 /* delay in queue       */
         double arrival = Ssq2.START;
@@ -53,7 +53,7 @@ public class ServerBlog implements Runnable {
 				response = wait + service;
 				departure += temp.getArrival() + wait;    // time of departure del job corrente
 				arrival = temp.getArrival() + response;
-				job = new Job(temp.getInterarrival(), arrival, delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, true);
+				job = new Job(temp.getInterarrival(), arrival, delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, true, Ssq2.START);
 				totalService += service;
 				wait = delay + service;		// attesa in coda del job successivo
 
