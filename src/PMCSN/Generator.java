@@ -13,9 +13,9 @@ public class Generator {
 		 * ---------------------------------------------------
 		 */
 		if (g == null)
-		    return (-m * Math.log(1.0 - r.random()));
+		    return ((-m * Math.log(1.0 - r.random()))/1000);
 		else
-			return (-m * Math.log(1.0 - g.random()));
+			return ((-m * Math.log(1.0 - g.random()))/1000);
 	}
 	
 	public static boolean getWeighBoolean(int percentage) { 
