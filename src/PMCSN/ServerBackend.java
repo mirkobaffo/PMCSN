@@ -82,10 +82,11 @@ public class ServerBackend {
 
     static double START   = 0.0;            // initial (open the door)
     static double STOP    = 1000000.0;        // terminal (close the door) time
-    static int    SERVERS = 2;              // number of servers
+    static int    SERVERS = 3;              // number of servers
 
     static double sarrival = START;
     static double u = 60; //tempo medio di servizio
+    static double u2 = 45; // tempo medio di servizio del Server 1
 
     public static ArrayList<Job> bJobs = new ArrayList<>();
 
@@ -178,13 +179,17 @@ public class ServerBackend {
                 s = e;
 
                 if (number >= SERVERS) {
-                    service = Arrival.getMultiService(r, u);
+                    if (s == 1) {
+                        service = Arrival.getMultiService(r, u2);
+                    }
+                    else {
+                        service = Arrival.getMultiService(r, u);
+                    }
                     sum[s].service += service;
                     sum[s].served++;
                     event[s].t = t.current + service;
                     job = new Job(0.0, event[s].t, 0.0, 0.0, 0, 'A', index, event[s].wait, sum[s].service, 0.0, true, 0.0);
                     Utils.prioSplitter(job);
-                    System.out.println("rimando indietro backend");
                 }
                 else
                     event[s].x = 0;

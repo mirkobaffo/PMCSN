@@ -33,7 +33,7 @@ public class ServerMaster {
 
 				Job temp = null;
 				if (job.getState() == true) {        //  gestione dei job in arrivo dal feedback
-					Utils.checkState(job);
+					//Utils.checkState(job);
 				} else {
 					if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && Ssq2.lQueue.isEmpty()) {
 						index++;
