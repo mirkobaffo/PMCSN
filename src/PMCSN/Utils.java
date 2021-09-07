@@ -1,5 +1,7 @@
 package PMCSN;
 
+import java.text.DecimalFormat;
+
 public class Utils {
 	
 	public static void prioSplitter(Job job) {
@@ -37,19 +39,21 @@ public class Utils {
 		
 	}
 	
-	/*public static void checkState(Job job) {
+	public static void checkState(Job job) {
+		Job ret;
 		if (Generator.getWeighBoolean(80) == true) {
+			System.out.println("FEEDBACK OK\n");
 			DecimalFormat f = new DecimalFormat("###0.00");
-			//System.out.println("   type of the job .. =   " + job.getTopic());
-			//System.out.println("   interarrival time =   " + f.format(job.getInterarrival()));
-			//System.out.println("   wait ............ =   " + f.format(job.getWait()));
-			//System.out.println("   delay ........... =   " + f.format(job.getDelay()));
-			//System.out.println("   service time .... =   " + f.format(job.getService()));
+			System.out.println("   type of the job .. =   " + job.getLabel());
+			System.out.println("   interarrival time =   " + f.format(job.getInterarrival()));
+			System.out.println("   wait ............ =   " + f.format(job.getWait()));
+			System.out.println("   delay ........... =   " + f.format(job.getDelay()));
+			System.out.println("   service time .... =   " + f.format(job.getService()));
 		} else {
-			job.setState(false);
-			topicSplitter(job);
+			ret = new Job(job.getInterarrival(), job.getArrival(), job.getDelay(), job.getDeparture(), job.getPriority(), job.getLabel(), job.getSqn(), job.getWait(), job.getService(), job.getResponse(), false, job.getTime());
+			topicSplitter(ret);
 		} 
 		
-	}*/
+	}
 
 }

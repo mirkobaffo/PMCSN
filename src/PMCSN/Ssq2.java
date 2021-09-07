@@ -18,7 +18,7 @@ import java.lang.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il thread degli arrivi
+class Ssq2  { //dovremo cambiargli nome perché questo è il thread degli arrivi
 
   static long LAST = 10000;                    /* number of jobs processed */
   static double START = 0.0;                   /* initial time             */
@@ -47,11 +47,10 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
   
   public static Rng r = new Rng();
 
-    public static double totalServiceFullQueue = 0.0;
 
     public static long start = System.currentTimeMillis();
 
-  public void run() {
+  public static void ssqArrive() {
     
     int   index     = 0;                    /* job index            */
     double interarrival = START;
@@ -61,7 +60,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
     char label;
 
 
-      r.putSeed(123456789);
+    r.putSeed(123456789);
     
 	queue.add(hQueue);
 	queue.add(mQueue);
@@ -84,8 +83,7 @@ class Ssq2 implements Runnable { //dovremo cambiargli nome perché questo è il 
 
 	  index++;
     }
-    totalServiceFullQueue = ServerMaster.serviceAtMaxLoad;
-    
+
   }
 
 	  /*ServerMaster s = new ServerMaster();

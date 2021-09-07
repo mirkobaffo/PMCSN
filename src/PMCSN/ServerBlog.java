@@ -2,11 +2,6 @@ package PMCSN;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import PMCSN.ServerWordpress.MsqEvent;
-import PMCSN.ServerWordpress.MsqSum;
-import PMCSN.ServerWordpress.MsqT;
 
 /*public class ServerBlog implements Runnable {
 
@@ -94,84 +89,93 @@ import PMCSN.ServerWordpress.MsqT;
 	}
 }*/
 
-public class ServerBlog implements Runnable {
+public class ServerBlog {
 
-	static double START   = 0.0;            // initial (open the door)
-	static double STOP    = 20000.0;        // terminal (close the door) time
-	static int    SERVERS = 2;              // number of servers
+    static double START   = 0.0;            // initial (open the door)
+    static double STOP    = 1000000.0;        // terminal (close the door) time
+    static int    SERVERS = 2;              // number of servers
 
-	static double sarrival = START;
-	static double u = 1.0;
-	
-	public static ArrayList<Job> rJobs = new ArrayList<>();
+    static double sarrival = START;
+    static double u = 60; //tempo medio di servizio
 
-	class MsqT {
-		double current;                   // current time
-		double next;                      // next (most imminent) event time
-	}
+    public static ArrayList<Job> rJobs = new ArrayList<>();
 
-	class MsqSum {                      // accumulated sums of
-		double service;                   //   service times
-		long   served;                    //   number served
-	}
+    static class MsqT {
+        double current;                   // current time
+        double next;                      // next (most imminent) event time
+    }
 
-	class MsqEvent {                     // the next-event list
-		double t;                         //   next event time
-		int    x;                         //   event status, 0 or 1
-	}									//   può essere il nostro boolean
-	
+    static class MsqSum {                      // accumulated sums of
+        double service;                   //   service times
+        long   served;                    //   number served
+    }
 
-	public void run() {
-		long   number = 0;             // number in the node
-		int    e;                      // next event index
-		int    s;                      // server index
-		long   index  = 0;             // used to count processed jobs
-		double area   = 0.0;           // time integrated number in the node
-		double service;
-		
-		Rngs r = new Rngs();
-		r.plantSeeds(0);
+    static class MsqEvent {                     // the next-event list
+        double t;                         //   next event time
+        int    x;                         //   event status, 0 or 1
+        double wait;
+    }									//   può essere il nostro boolean
 
-		MsqEvent [] event = new MsqEvent [SERVERS + 1];
-        MsqSum [] sum = new MsqSum [SERVERS + 1];
+
+    public static void blog() {
+
+        long   number = 0;             // number in the node
+        int    e;                      // next event index
+        int    s;                      // server index
+        int  index  = 0;             // used to count processed jobs
+        double area   = 0.0;           // time integrated number in the node
+        double service;
+        //double wait;
+        double totalService = 0;
+        Job job;
+
+        Rngs r = new Rngs();
+        r.plantSeeds(0);
+
+        MsqEvent[] event = new MsqEvent[SERVERS + 1];
+        MsqSum[] sum = new MsqSum[SERVERS + 1];
         for (s = 0; s < SERVERS + 1; s++) {
             event[s] = new MsqEvent();
             sum [s]  = new MsqSum();
         }
 
         MsqT t = new MsqT();
-
         t.current    = START;
         if (!rJobs.isEmpty()) {
-        	event[0].t   = rJobs.get(0).getTime();	   
-        	rJobs.remove(0);
-	        event[0].x   = 1;						
-	        for (s = 1; s <= SERVERS; s++) {
-	            event[s].t     = START;          /* this value is arbitrary because */
-	            event[s].x     = 0;              /* all servers are initially idle  */
-	            sum[s].service = 0.0;
-	
-	        }
+            event[0].t   = rJobs.get(0).getTime();
+            event[0].wait = ((t.next - t.current) * number)+ rJobs.get(0).getWait();
+            rJobs.remove(0);
+            event[0].x   = 1;
+            for (s = 1; s <= SERVERS; s++) {
+                event[s].t     = START;          /* this value is arbitrary because */
+                event[s].x     = 0;              /* all servers are initially idle  */
+                sum[s].service = 0.0;
+            }
+
         }
 
         while ((event[0].x != 0) || (number != 0)) {
             e = nextEvent(event);                /* next event index */
             t.next = event[e].t;                        /* next event time  */
-            area += (t.next - t.current) * number;     /* update integral  */
+            area += (t.next - t.current) * number; /* update integral  */
             t.current = t.next;                            /* advance the clock*/
-
             if (e == 0) {                                  /* process an arrival*/
                 number++;
                 if (!rJobs.isEmpty()) {
-	                event[0].t = rJobs.get(0).getTime();
-	                rJobs.remove(0);
+                    event[0].t = rJobs.get(0).getTime();
+                    event[0].wait = ((t.next - t.current) * number)+ rJobs.get(0).getWait();
+                    /*job = new Job(wJobs.get(0).getInterarrival(), event[0].t, wJobs.get(0).getDelay(), wJobs.get(0).getDeparture(), wJobs.get(0).getPriority(), wJobs.get(0).getLabel(), wJobs.get(0).getSqn(), wait, sum[0].service, wJobs.get(0).getResponse(), true, wJobs.get(0).getTime());
+                    Utils.topicSplitter(job);*/
+                    rJobs.remove(0);
                 } else {
-                	continue;
+                    continue;
                 }
-                if (event[0].t > STOP)
+                if (rJobs.isEmpty())
+                    //if (event[0].t > STOP)
                     event[0].x = 0;
                 if (number <= SERVERS) {
                     service = Arrival.getMultiService(r, u);
+                    totalService += service;
                     s = findOne(event);
                     sum[s].service += service;
                     sum[s].served++;
@@ -180,14 +184,17 @@ public class ServerBlog implements Runnable {
                 }
             }
             else {                                         /* process a departure */
-                index++;                                     /* from server s       */
+                index++;                              /* from server s       */
                 number--;
-                s                 = e;
+                s = e;
+
                 if (number >= SERVERS) {
                     service = Arrival.getMultiService(r, u);
                     sum[s].service += service;
                     sum[s].served++;
                     event[s].t = t.current + service;
+                    job = new Job(0.0, event[s].t, 0.0, 0.0, 0, 'A', index, event[s].wait, sum[s].service, 0.0, true, 0.0);
+                    Utils.prioSplitter(job);
                 }
                 else
                     event[s].x = 0;
@@ -198,15 +205,14 @@ public class ServerBlog implements Runnable {
         DecimalFormat g = new DecimalFormat("####.###");
 
         System.out.println("\nfor " + index + " jobs the service node statistics are:\n");
-        System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / index));
+        System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / (index)));
         System.out.println("  avg wait ........... =   " + f.format(area / index));
         System.out.println("  avg # in node ...... =   " + f.format(area / t.current));
-
         for (s = 1; s <= SERVERS; s++)          /* adjust area to calculate */
             area -= sum[s].service;              /* averages for the queue   */
 
         System.out.println("  avg delay .......... =   " + f.format(area / index));
-        System.out.println("  avg # in queue ..... =   " + f.format(area / t.current));
+        System.out.println("  avg # in queue ..... =   " + f.format(area / (t.current)));
         System.out.println("\nthe server statistics are:\n");
         System.out.println("    server     utilization     avg service      share");
         for (s = 1; s <= SERVERS; s++) {
@@ -218,7 +224,7 @@ public class ServerBlog implements Runnable {
     }
 
 
-	int nextEvent(MsqEvent [] event) {
+	static int nextEvent(MsqEvent[] event) {
         /* ---------------------------------------
          * return the index of the next event type
          * ---------------------------------------
@@ -237,7 +243,7 @@ public class ServerBlog implements Runnable {
         return (e);
     }
 
-    int findOne(MsqEvent [] event) {
+    static int findOne(MsqEvent[] event) {
         /* -----------------------------------------------------
          * return the index of the available server idle longest
          * -----------------------------------------------------

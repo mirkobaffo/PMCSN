@@ -81,42 +81,46 @@ import java.util.concurrent.TimeUnit;
 
 }*/
 
-public class ServerWordpress implements Runnable {
+public class ServerWordpress {
 
 	static double START   = 0.0;            // initial (open the door)
-	static double STOP    = 10000.0;        // terminal (close the door) time
+	static double STOP    = 1000000.0;        // terminal (close the door) time
 	static int    SERVERS = 2;              // number of servers
 
 	static double sarrival = START;
-	static double u = 1.0;
+	static double u = 60; //tempo medio di servizio
 	
 	public static ArrayList<Job> wJobs = new ArrayList<>();
 
-	class MsqT {
+	static class MsqT {
 		double current;                   // current time
 		double next;                      // next (most imminent) event time
 	}
 
-	class MsqSum {                      // accumulated sums of
+	static class MsqSum {                      // accumulated sums of
 		double service;                   //   service times
 		long   served;                    //   number served
 	}
 
-	class MsqEvent {                     // the next-event list
+	static class MsqEvent {                     // the next-event list
 		double t;                         //   next event time
 		int    x;                         //   event status, 0 or 1
+        double wait;
 	}									//   può essere il nostro boolean
 	
 
-	public void run() {
+	public static void wordpress() {
 
 		long   number = 0;             // number in the node
 		int    e;                      // next event index
 		int    s;                      // server index
-		long   index  = 0;             // used to count processed jobs
+		int  index  = 0;             // used to count processed jobs
 		double area   = 0.0;           // time integrated number in the node
 		double service;
+		//double wait;
 		double totalService = 0;
+		Job job;
+
 		Rngs r = new Rngs();
 		r.plantSeeds(0);
 
@@ -131,30 +135,35 @@ public class ServerWordpress implements Runnable {
         t.current    = START;
         if (!wJobs.isEmpty()) {
         	event[0].t   = wJobs.get(0).getTime();
-        	wJobs.remove(0);
+            event[0].wait = ((t.next - t.current) * number)+ wJobs.get(0).getWait();
+            wJobs.remove(0);
 	        event[0].x   = 1;						
 	        for (s = 1; s <= SERVERS; s++) {
 	            event[s].t     = START;          /* this value is arbitrary because */
 	            event[s].x     = 0;              /* all servers are initially idle  */
 	            sum[s].service = 0.0;
-	
 	        }
+
         }
 
         while ((event[0].x != 0) || (number != 0)) {
             e = nextEvent(event);                /* next event index */
             t.next = event[e].t;                        /* next event time  */
-            area += (t.next - t.current) * number;     /* update integral  */
+            area += (t.next - t.current) * number; /* update integral  */
             t.current = t.next;                            /* advance the clock*/
             if (e == 0) {                                  /* process an arrival*/
                 number++;
                 if (!wJobs.isEmpty()) {
                     event[0].t = wJobs.get(0).getTime();
-	                wJobs.remove(0);
+                    event[0].wait = ((t.next - t.current) * number)+ wJobs.get(0).getWait();
+                    /*job = new Job(wJobs.get(0).getInterarrival(), event[0].t, wJobs.get(0).getDelay(), wJobs.get(0).getDeparture(), wJobs.get(0).getPriority(), wJobs.get(0).getLabel(), wJobs.get(0).getSqn(), wait, sum[0].service, wJobs.get(0).getResponse(), true, wJobs.get(0).getTime());
+                    Utils.topicSplitter(job);*/
+                    wJobs.remove(0);
                 } else {
                 	continue;
                 }
-                if (event[0].t > STOP)
+                if (wJobs.isEmpty())
+                //if (event[0].t > STOP)
                     event[0].x = 0;
                 if (number <= SERVERS) {
                     service = Arrival.getMultiService(r, u);
@@ -167,14 +176,17 @@ public class ServerWordpress implements Runnable {
                 }
             }
             else {                                         /* process a departure */
-                index++;                                     /* from server s       */
+                index++;                              /* from server s       */
                 number--;
-                s                 = e;
+                s = e;
+
                 if (number >= SERVERS) {
                     service = Arrival.getMultiService(r, u);
                     sum[s].service += service;
                     sum[s].served++;
                     event[s].t = t.current + service;
+                    job = new Job(0.0, event[s].t, 0.0, 0.0, 0, 'A', index, event[s].wait, sum[s].service, 0.0, true, 0.0);
+                    Utils.prioSplitter(job);
                 }
                 else
                     event[s].x = 0;
@@ -204,7 +216,7 @@ public class ServerWordpress implements Runnable {
     }
 
 
-	int nextEvent(MsqEvent [] event) {
+	static int nextEvent(MsqEvent[] event) {
         /* ---------------------------------------
          * return the index of the next event type
          * ---------------------------------------
@@ -223,7 +235,7 @@ public class ServerWordpress implements Runnable {
         return (e);
     }
 
-    int findOne(MsqEvent [] event) {
+    static int findOne(MsqEvent[] event) {
         /* -----------------------------------------------------
          * return the index of the available server idle longest
          * -----------------------------------------------------

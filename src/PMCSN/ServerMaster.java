@@ -3,39 +3,42 @@ package PMCSN;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
-public class ServerMaster implements Runnable {
+public class ServerMaster {
 
 	public static long end;
 	public static double serviceAtMaxLoad;
+	public static double workingDay = 540.00 * 60; // minuti in giornata lavorativa
 
-    public void run() {
-    	
-    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
-    	int index = 0;
-    	int counter = 0;
-    	double delay;                                 /* delay in queue */
-        double service;                               /* service time */
-        double wait = Ssq2.START;  								/* delay + service */
-        double response = Ssq2.START;
-        double departure = Ssq2.START;
-        double totalService = Ssq2.START;
-        double time = Ssq2.START; // è l'arrivo nel server successivo
-        double u = 5.45;
-		
-        try {
 
-	        while(index < Ssq2.LAST){
-	        
-	        	TimeUnit.MICROSECONDS.sleep(1000);
-	        	
-	        	Job temp = null;
-	        	/*if (job.getState() == true) { 	    //  gestione dei job in arrivo dal feedback 
-	        		Utils.checkState(job);
-	        	} else {*/
+	public static void master() {
+
+		Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
+		int index = 0;
+		int counter = 0;
+		double delay;                                 /* delay in queue */
+		double service;                               /* service time */
+		double arrival = 0;
+		double wait = Ssq2.START;                                /* delay + service */
+		double response = Ssq2.START;
+		double departure = Ssq2.START;
+		double totalService = Ssq2.START;
+		double time = Ssq2.START; // è l'arrivo nel server successivo
+		double u = 11; // 60/5,45 --> tempo medio di servizio
+
+		try {
+
+			while (index < Ssq2.LAST) {
+
+				TimeUnit.MICROSECONDS.sleep(1000);
+
+				Job temp = null;
+				if (job.getState() == true) {        //  gestione dei job in arrivo dal feedback
+					Utils.checkState(job);
+				} else {
 					if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && Ssq2.lQueue.isEmpty()) {
 						index++;
 						continue;
-					} else if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && !Ssq2.lQueue.isEmpty() ) {
+					} else if (Ssq2.hQueue.isEmpty() && Ssq2.mQueue.isEmpty() && !Ssq2.lQueue.isEmpty()) {
 						temp = Ssq2.lQueue.get(0);
 						Ssq2.lQueue.remove(temp);
 					} else if (Ssq2.hQueue.isEmpty() && !Ssq2.mQueue.isEmpty()) {
@@ -45,34 +48,35 @@ public class ServerMaster implements Runnable {
 						temp = Ssq2.hQueue.get(0);
 						Ssq2.hQueue.remove(temp);
 					}
-	        	//}
-	            
-	            if (temp == null) {
-	            	index++;
-	            	continue;
-	            }
-	            
-	            if (temp.getArrival() < departure) {
-	            	  delay = departure - temp.getArrival(); 	// delay in queue 
-	            } else {
-	            	  delay = Ssq2.START;      							 // no delay   
-	            }
+					//}
 
-				service = Arrival.getService(Ssq2.r, u);  // del job corrente
+					if (temp == null) {
+						index++;
+						continue;
+					}
 
-				response = wait + service;
+					if (temp.getArrival() < departure) {
+						delay = departure - temp.getArrival();    // delay in queue
+					} else {
+						delay = Ssq2.START;                                 // no delay
+					}
+					arrival = job.getArrival();
+					service = Arrival.getService(Ssq2.r, u);  // del job corrente
 
-				departure = temp.getArrival() + wait;    // time of departure del job corrente
+					response = wait + service;
 
-				time = temp.getArrival() + wait + service;
+					departure = temp.getArrival() + wait;    // time of departure del job corrente
 
-				job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, temp.getState(), time);
-				totalService += service;
-				serviceAtMaxLoad = totalService;
-				wait = delay + service;		// attesa in coda del job successivo
-				Utils.topicSplitter(job);
-	            index++; 
-	        }
+					time = temp.getArrival() + wait + service;
+
+					job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, temp.getState(), time);
+					totalService += service;
+					serviceAtMaxLoad = totalService;
+					wait = delay + service;        // attesa in coda del job successivo
+					Utils.topicSplitter(job);
+					index++;
+				}
+			}
 
 	       /* System.out.println("coda frontend: \n");
 			for (Job elem: ServerFrontend.fJobs) {
@@ -94,13 +98,15 @@ public class ServerMaster implements Runnable {
 				System.out.println("job: " + elem.getSqn() + ": " + elem.getArrival());
 				System.out.println(elem.getTopic() + "\n");
 			}*/
-	        //writer.close();
+				//writer.close();
         
         /*} catch (IOException e) {
         	e.printStackTrace();*/
-        } catch (InterruptedException e) {
-    		e.printStackTrace();
-    	}
+		} catch(InterruptedException e){
+			e.printStackTrace();
+		}
+
+		System.out.println("Size delle code di priorità: " + Ssq2.hQueue.size() + " " + Ssq2.mQueue.size() + " " + Ssq2.lQueue.size());
 
 		DecimalFormat f = new DecimalFormat("#.######");
 		System.out.println("Server Master\n");
@@ -111,14 +117,13 @@ public class ServerMaster implements Runnable {
 		System.out.println("   average service time .... =   " + f.format(totalService / index));
 		System.out.println("   average # in the node ... =   " + f.format(job.getWait() / departure));
 		System.out.println("   average # in the queue .. =   " + f.format(job.getDelay() / departure));
+		//System.out.println("   la giornata lavorativa finisce dopo .. =   " + f.format(departure+job.getService()) + "minuti");
 		System.out.println("   utilization ............. =   " + f.format(totalService / departure));
-		System.out.println("utilizzazione vera alla fine degli arrivi: " + Ssq2.totalServiceFullQueue/job.getArrival());
-
 
 		end = System.currentTimeMillis();
-		System.out.println("Duration: " + (end-Ssq2.start) + "milliseconds");
-    }
-      
-}  
+		System.out.println("Duration: " + (end - Ssq2.start) + "milliseconds");
+	}
+}
+
 
 
