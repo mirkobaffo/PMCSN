@@ -5,12 +5,12 @@ import java.text.DecimalFormat;
 public class Utils {
 	
 	public static void prioSplitter(Job job) {
-		if (job.getPriority() == Ssq2.hPrio) {
-			Ssq2.hQueue.add(job); 
-	  } else if (job.getPriority() == Ssq2.mPrio) {
-		  Ssq2.mQueue.add(job); 
+		if (job.getPriority() == Arrival.hPrio) {
+			Arrival.hQueue.add(job); 
+	  } else if (job.getPriority() == Arrival.mPrio) {
+		  Arrival.mQueue.add(job); 
 	  } else {
-		  Ssq2.lQueue.add(job); 
+		  Arrival.lQueue.add(job); 
 	  }
 	}
 	

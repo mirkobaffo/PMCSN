@@ -10,15 +10,15 @@ public class ServerFrontend {
 	
 	public static void frontend() {
 		
-    	Job job = new Job(Ssq2.START, Ssq2.START, Ssq2.START, Ssq2.START, 0, 'A', 0, Ssq2.START, Ssq2.START, Ssq2.START, false, Ssq2.START);
+    	Job job = new Job(Arrival.START, Arrival.START, Arrival.START, Arrival.START, 0, 'A', 0, Arrival.START, Arrival.START, Arrival.START, false, Arrival.START);
     	int index = 0;
-    	double delay = Ssq2.START;   								/* delay in queue       */
-        double arrival = Ssq2.START;
-    	double response = Ssq2.START;
-    	double service = Ssq2.START;                               /* service time         */
-        double wait = Ssq2.START;                                  /* delay + service      */
-        double departure = Ssq2.START;
-        double totalService = Ssq2.START;
+    	double delay = Arrival.START;   								/* delay in queue       */
+        double arrival = Arrival.START;
+    	double response = Arrival.START;
+    	double service = Arrival.START;                               /* service time         */
+        double wait = Arrival.START;                                  /* delay + service      */
+        double departure = Arrival.START;
+        double totalService = Arrival.START;
         double u = 75; //60/0,8 tempo di servizio medio
 
         int counter = 0;
@@ -44,16 +44,15 @@ public class ServerFrontend {
 			if (temp.getArrival() < departure) {
 				  delay = departure - temp.getArrival(); 	// delay in queue
 			} else {
-				  delay = Ssq2.START;      							 // no delay
+				  delay = Arrival.START;      							 // no delay
 			}
-			service = Arrival.getService(Ssq2.r, u);  // del job corrente
+			service = Generator.getService(Arrival.r, u);  // del job corrente
 			response = wait + service;
 			departure = temp.getArrival() + wait;    // time of departure del job corrente
 			//arrival = temp.getArrival() + response; //controllare con Ilenia perchè ha fatto questo
-			job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, true, Ssq2.START);
+			job = new Job(temp.getInterarrival(), temp.getArrival(), delay, departure, temp.getPriority(), temp.getLabel(), temp.getSqn(), wait, service, response, true, Arrival.START);
 			totalService += service;
 			wait = delay + service;		// attesa in coda del job successivo
-			Utils.prioSplitter(job);
 			index++;
 		}
 
