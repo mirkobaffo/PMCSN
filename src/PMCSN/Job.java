@@ -1,6 +1,4 @@
 package PMCSN;
-/*** La classe Patient rappresenta il singolo job 
- * */
 
 public final class Job {
 	
@@ -39,38 +37,27 @@ public final class Job {
 	public double getInterarrival() {
 		return interarrival;
 	}
-	/*public void setInterarrival(double interarrival) {
-		this.inter*/
+	
 	public int getPriority() {
 		return priority;
 	}
-	/*public void setPriority(int priority) {
-		this.priority = priority;
-	}*/
+	
 	public int getSqn() {
 		return sqn;
 	}
-	/*public void setSqn(int sqn) {
-		this.sqn = sqn;
-	}*/
+	
 	public double getWait() {
 		return wait;
 	}
-	/*public void setWait(double wait) {
-		this.wait = wait;
-	}*/
+	
 	public double getService() {
 		return service;
 	}
-	/*public void setService(double service) {
-		this.service = service;
-	}*/
+	
 	public double getResponse() {
 		return response;
 	}
-	/*public void setResponse(double response) {
-		this.response = response;
-	}*/
+	
 	public double getDelay() {
 		return delay;
 	}
@@ -80,27 +67,19 @@ public final class Job {
 	public double getArrival() {
 		return arrival;
 	}
-	/*public void setArrival(double arrival) {
-		this.arrival = arrival;
-	}*/
+	
 	public char getLabel() {
 		return label;
 	}
-	/*public void setTopic(char topic) {
-		this.topic = topic;
-	}*/
+	
 	public double getDeparture() {
 		return departure;
 	}
-	/*public void setDeparture(double departure) {
-		this.departure = departure;
-	}*/
+	
 	public boolean getState() {
 		return state;
 	}
-	/*public void setState(boolean state) {
-		this.state = state;
-	}*/
+	
 	public double getTime() {
 		return time;
 	}
