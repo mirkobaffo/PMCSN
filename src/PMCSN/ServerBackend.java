@@ -2,6 +2,7 @@ package PMCSN;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /*public class ServerBackend implements Runnable {
 
@@ -82,13 +83,14 @@ public class ServerBackend {
 
     static double START   = 0.0;            // initial (open the door)
     static double STOP    = 1000000.0;        // terminal (close the door) time
-    static int    SERVERS = 3;              // number of servers
-
+    static int    SERVERS = 2;              // number of servers
+    static int service1 = 0;
     static double sarrival = START;
-    static double u = 60; //tempo medio di servizio
-    static double u2 = 45; // tempo medio di servizio del Server 1
+    static double u = 80; //tempo medio di servizio
+    static double u2 = 30; // tempo medio di servizio del Server 1
 
     public static ArrayList<Job> bJobs = new ArrayList<>();
+
 
     static class MsqT {
         double current;                   // current time
@@ -107,7 +109,7 @@ public class ServerBackend {
     }									//   può essere il nostro boolean
 
 
-    public static void backend() {
+    public static Main.Container backend() {
 
         long   number = 0;             // number in the node
         int    e;                      // next event index
@@ -118,7 +120,7 @@ public class ServerBackend {
         //double wait;
         double totalService = 0;
         Job job;
-
+        Rng r1 = new Rng();
         Rngs r = new Rngs();
         r.plantSeeds(0);
 
@@ -164,7 +166,7 @@ public class ServerBackend {
                     //if (event[0].t > STOP)
                     event[0].x = 0;
                 if (number <= SERVERS) {
-                    service = Arrival.getMultiService(r, u);
+                    service = Generator.getMultiService(r, u);
                     totalService += service;
                     s = findOne(event);
                     sum[s].service += service;
@@ -180,41 +182,59 @@ public class ServerBackend {
 
                 if (number >= SERVERS) {
                     if (s == 1) {
-                        service = Arrival.getMultiService(r, u2);
+                        service = Generator.getService(r1, u2);
+                        sum[s].service += service;
                     }
                     else {
-                        service = Arrival.getMultiService(r, u);
+                        service = Generator.getService(r1, u);
+                        sum[s].service += service;
                     }
-                    sum[s].service += service;
+
                     sum[s].served++;
                     event[s].t = t.current + service;
                     job = new Job(0.0, event[s].t, 0.0, 0.0, 0, 'A', index, event[s].wait, sum[s].service, 0.0, true, 0.0);
-                    Utils.prioSplitter(job);
                 }
                 else
                     event[s].x = 0;
             }
         }
-
+        Main.Container c = new Main.Container();
+        c.averageWait = area/index;
+        c.serverNumber = SERVERS;
+        /*
         DecimalFormat f = new DecimalFormat("####.##");
         DecimalFormat g = new DecimalFormat("####.###");
-
+        System.out.println("                               ");
+        System.out.println("          SERVER BACKEND          ");
+        System.out.println("                               ");
         System.out.println("\nfor " + index + " jobs the service node statistics are:\n");
         System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / (index)));
         System.out.println("  avg wait ........... =   " + f.format(area / index));
         System.out.println("  avg # in node ...... =   " + f.format(area / t.current));
+         */
         for (s = 1; s <= SERVERS; s++)          /* adjust area to calculate */
             area -= sum[s].service;              /* averages for the queue   */
+        c.averageInQueue = area/t.current;
+        c.aversageDelay =  area/index;
 
+        /*
         System.out.println("  avg delay .......... =   " + f.format(area / index));
         System.out.println("  avg # in queue ..... =   " + f.format(area / (t.current)));
         System.out.println("\nthe server statistics are:\n");
         System.out.println("    server     utilization     avg service      share");
+         */
         for (s = 1; s <= SERVERS; s++) {
-            System.out.print("       " + s + "          " + g.format(sum[s].service / t.current) + "            ");
-            System.out.println(f.format(sum[s].service / sum[s].served) + "         " + g.format(sum[s].served / (double)index));
+            //System.out.print("       " + s + "          " + g.format(sum[s].service / t.current) + "            ");
+            //System.out.println(f.format(sum[s].service / sum[s].served) + "         " + g.format(sum[s].served / (double)index));
+            //System.out.println("       " + "il servers " + s + " ha servito " + sum[s].served + " job");
+            //System.out.println("------------------------------------------");
+            c.utilizations.add(sum[s].service/sum[s].served);
+            c.services.add(sum[s].service/index);
+            c.responseTime.add(sum[s].service/index + c.averageWait);
+
         }
 
+        return c;
     }
 
 

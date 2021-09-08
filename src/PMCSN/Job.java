@@ -1,5 +1,7 @@
 package PMCSN;
 
+import java.text.DecimalFormat;
+
 public final class Job {
 	
 	private final double interarrival;
@@ -64,8 +66,9 @@ public final class Job {
 	/*public void setDelay(double delay) {
 		this.delay = delay;
 	}*/
-	public double getArrival() {
-		return arrival;
+	public long getArrival() {
+		return (long) Math.round(arrival *1000)/1000;
+
 	}
 	
 	public char getLabel() {

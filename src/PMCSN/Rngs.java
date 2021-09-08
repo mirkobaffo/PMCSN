@@ -160,7 +160,7 @@ class Rngs {
 
                     line = ReadThis.readLine(); */
                     //x = Long.parseLong(line);
-                    x= 123456789;
+                    x= 463528228;
                // } catch (IOException e) {
                // } catch (NumberFormatException nfe) {
                // }

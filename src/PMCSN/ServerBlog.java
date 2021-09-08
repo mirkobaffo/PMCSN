@@ -31,7 +31,7 @@ public class ServerBlog {
     }									//   può essere il nostro boolean
 
 
-    public static void blog() {
+    public static Main.Container blog() {
 
         long   number = 0;             // number in the node
         int    e;                      // next event index
@@ -107,25 +107,39 @@ public class ServerBlog {
                     event[s].x = 0;
             }
         }
-
+        Main.Container c = new Main.Container();
+        c.averageWait = area/index;
+        c.serverNumber = SERVERS;
+        /*
         DecimalFormat f = new DecimalFormat("####.##");
         DecimalFormat g = new DecimalFormat("####.###");
-
+        System.out.println("                               ");
+        System.out.println("          SERVER BLOG          ");
+        System.out.println("                               ");
         System.out.println("\nfor " + index + " jobs the service node statistics are:\n");
         System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / (index)));
         System.out.println("  avg wait ........... =   " + f.format(area / index));
         System.out.println("  avg # in node ...... =   " + f.format(area / t.current));
+         */
         for (s = 1; s <= SERVERS; s++)          /* adjust area to calculate */
             area -= sum[s].service;              /* averages for the queue   */
+        c.averageInQueue = area/t.current;
+        c.aversageDelay =  area/index;
 
+        /*
         System.out.println("  avg delay .......... =   " + f.format(area / index));
         System.out.println("  avg # in queue ..... =   " + f.format(area / (t.current)));
         System.out.println("\nthe server statistics are:\n");
         System.out.println("    server     utilization     avg service      share");
+         */
         for (s = 1; s <= SERVERS; s++) {
-            System.out.print("       " + s + "          " + g.format(sum[s].service / t.current) + "            ");
-            System.out.println(f.format(sum[s].service / sum[s].served) + "         " + g.format(sum[s].served / (double)index));
+            //System.out.print("       " + s + "          " + g.format(sum[s].service / t.current) + "            ");
+            //System.out.println(f.format(sum[s].service / sum[s].served) + "         " + g.format(sum[s].served / (double)index));
+            c.utilizations.add(sum[s].service/sum[s].served);
+            c.services.add(sum[s].service/index);
+            c.responseTime.add(sum[s].service/index + c.averageWait);
         }
+        return c;
     }
 
 

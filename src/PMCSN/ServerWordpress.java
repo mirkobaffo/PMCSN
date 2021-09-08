@@ -2,6 +2,7 @@ package PMCSN;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ServerWordpress {
 
@@ -11,8 +12,9 @@ public class ServerWordpress {
 
 	static double sarrival = START;
 	static double u = 60; //tempo medio di servizio
-	
-	public static ArrayList<Job> wJobs = new ArrayList<>();
+
+
+    public static ArrayList<Job> wJobs = new ArrayList<>();
 
 	static class MsqT {
 		double current;                   // current time
@@ -31,7 +33,7 @@ public class ServerWordpress {
 	}									//   può essere il nostro boolean
 	
 
-	public static void wordpress() {
+	public static Main.Container wordpress() {
 
 		long   number = 0;             // number in the node
 		int    e;                      // next event index
@@ -98,7 +100,14 @@ public class ServerWordpress {
                 s = e;
 
                 if (number >= SERVERS) {
-                    service = Generator.getMultiService(r, u);
+                    if (s == 1) {
+                        service = Generator.getMultiService(r, u);
+                    }
+                    else
+                    {
+                        service = Generator.getMultiService(r, u);
+
+                    }
                     sum[s].service += service;
                     sum[s].served++;
                     event[s].t = t.current + service;
@@ -107,26 +116,38 @@ public class ServerWordpress {
                     event[s].x = 0;
             }
         }
-
+        Main.Container c = new Main.Container();
+        c.averageWait = area/index;
+        c.serverNumber = SERVERS;
+        /*
         DecimalFormat f = new DecimalFormat("####.##");
         DecimalFormat g = new DecimalFormat("####.###");
-
+        System.out.println("                               ");
+        System.out.println("          SERVER WORDPRESS          ");
+        System.out.println("                               ");
         System.out.println("\nfor " + index + " jobs the service node statistics are:\n");
         System.out.println("  avg interarrivals .. =   " + f.format(event[0].t / (index)));
         System.out.println("  avg wait ........... =   " + f.format(area / index));
         System.out.println("  avg # in node ...... =   " + f.format(area / t.current));
         for (s = 1; s <= SERVERS; s++)          /* adjust area to calculate */
             area -= sum[s].service;              /* averages for the queue   */
-
+        c.averageInQueue = area/t.current;
+        c.aversageDelay =  area/index;
+        /*
         System.out.println("  avg delay .......... =   " + f.format(area / index));
         System.out.println("  avg # in queue ..... =   " + f.format(area / (t.current)));
         System.out.println("\nthe server statistics are:\n");
         System.out.println("    server     utilization     avg service      share");
+         */
         for (s = 1; s <= SERVERS; s++) {
-            System.out.print("       " + s + "          " + g.format(sum[s].service / t.current) + "            ");
-            System.out.println(f.format(sum[s].service / sum[s].served) + "         " + g.format(sum[s].served / (double)index));
-        }
+            //System.out.print("       " + s + "          " + g.format(sum[s].service / t.current) + "            ");
+            //System.out.println(f.format(sum[s].service / sum[s].served) + "         " + g.format(sum[s].served / (double)index));
+            c.utilizations.add(sum[s].service/sum[s].served);
+            c.services.add(sum[s].service/index);
+            c.responseTime.add((sum[s].service/index) + c.averageWait);
 
+        }
+        return c;
     }
 
 

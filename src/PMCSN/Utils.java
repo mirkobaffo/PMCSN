@@ -6,12 +6,14 @@ public class Utils {
 	
 	public static void prioSplitter(Job job) {
 		if (job.getPriority() == Arrival.hPrio) {
-			Arrival.hQueue.add(job); 
+			Arrival.hQueue.add(job);
 	  } else if (job.getPriority() == Arrival.mPrio) {
-		  Arrival.mQueue.add(job); 
-	  } else {
-		  Arrival.lQueue.add(job); 
-	  }
+		  Arrival.mQueue.add(job);
+		  Arrival.queue.add(job);
+
+		} else {
+		  Arrival.lQueue.add(job);
+		}
 	}
 	
 	public static void topicSplitter(Job job) {
@@ -19,6 +21,7 @@ public class Utils {
 		if (job.getLabel() == 'F') {
 			//System.out.println("sto nell'if del frontend: " + job.getTopic());
 			ServerFrontend.fJobs.add(job);
+			ServerFrontendImproved.fJobs.add(job);
 			//System.out.println("questa è la size della coda  frontend: " + ServerFrontend.fJobs.size());
 
 		} else if (job.getLabel() == 'B') {
