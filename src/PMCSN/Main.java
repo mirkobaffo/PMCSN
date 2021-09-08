@@ -7,6 +7,10 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
 	public static int numOfBatch = 64;
+	public static int totSum = 0;
+	public static double totalWait = 0;
+	public static double totalService = 0;
+	public static double totalUtilization = 0;
 
 	public static class Container {
 		double averageWait;
@@ -18,6 +22,7 @@ public class Main {
 		List<Double> services = new ArrayList<>();
 	}
 
+	static List<Container> allJob = new ArrayList<>();
 	static List<Container> containerMaster = new ArrayList<>();
 	static List<Container> containerFront = new ArrayList<>();
 	static List<Container> containerBack = new ArrayList<>();
@@ -40,10 +45,14 @@ public class Main {
 			}*/
 			containerBack.add(ServerBackend.backend());
 			containerWord.add(ServerWordpress.wordpress());
-			containerFront.add(ServerFrontend.frontend());
-			//containerFront.add(ServerFrontendImproved.frontEnd()); //questo il miglioramento sul frontend
+			//containerFront.add(ServerFrontend.frontend());
+			containerFront.add(ServerFrontendImproved.frontEnd()); //questo il miglioramento sul frontend
 			containerBlog.add(ServerBlog.blog());
 		}
+		allJob.addAll(containerFront);
+		allJob.addAll(containerBack);
+		allJob.addAll(containerBlog);
+		allJob.addAll(containerWord);
 		System.out.println("      MASTER     ");
 		System.out.println("                  ");
 		getValueFromContainer(containerMaster, numOfBatch);
@@ -63,6 +72,20 @@ public class Main {
 		System.out.println("      BLOG     ");
 		System.out.println("                  ");
 		getValueFromContainer(containerBlog, numOfBatch);
+		System.out.println("                  ");
+		System.out.println("      TUTTI I JOB     ");
+		System.out.println("                  ");
+		System.out.println("Attesa media: " + totalWait/totSum);
+		System.out.println("servizio medio: " + totalService/totSum);
+		System.out.println("tempo di risposta medio: " + totalWait/totSum + totalService/totSum);
+		System.out.println("utilizzazione media: " + totalUtilization/totSum);
+
+
+
+
+
+
+
 	}
 
 	public static void getValueFromContainer(List<Container> cList, int numOfBatch){
@@ -106,13 +129,27 @@ public class Main {
 		container.services.add(service1/numOfBatch);
 		container.utilizations.add(utilization1/numOfBatch);
 		container.responseTime.add(response1/numOfBatch);
+		totalWait += wait/numOfBatch;
 
 		if(server>1) {
 			container.services.add(service2/numOfBatch);
 			container.utilizations.add(utilization2/numOfBatch);
 			container.responseTime.add(response2/numOfBatch);
+			totalUtilization += utilization2/numOfBatch + utilization1/numOfBatch;
+			totalService += service2/numOfBatch + service1/numOfBatch;
+			totSum += 2;
+
 		}
+		else{
+			totalUtilization += utilization1/numOfBatch;
+			totalService += service1/numOfBatch;
+			totSum ++;
+
+
+		}
+
 		printValueFromContainer(container);
+
 	}
 
 
